@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Admin | Tasbehaaa For Hand Made Mirrors
+    </title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif;
+            background: #f7f4ef;
+            color: #2d2925;
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        .login-page {
+            min-height: 100vh;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(155,116,58,.15),
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at bottom left,
+                    rgba(155,116,58,.10),
+                    transparent 35%
+                ),
+
+                #f7f4ef;
+        }
+
+        .login-box {
+            width: 100%;
+
+            max-width: 430px;
+
+            background: #ffffff;
+
+            padding: 40px 30px;
+
+            border-radius: 24px;
+
+            border: 1px solid #eee3d5;
+
+            box-shadow:
+                0 20px 60px rgba(0,0,0,.10);
+        }
+
+        .login-logo {
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+        .login-logo img {
+            width: 110px;
+
+            height: 110px;
+
+            object-fit: contain;
+
+            margin-bottom: 12px;
+        }
+
+        .login-logo h1 {
+            font-family: "Playfair Display", serif;
+
+            color: #9b743a;
+
+            font-size: 28px;
+        }
+
+        .login-logo p {
+            color: #777;
+
+            font-size: 14px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+
+            width: 100%;
+
+            padding: 13px 15px;
+
+            border: 1px solid #ddd4c7;
+
+            border-radius: 12px;
+
+            background: #fff;
+
+            outline: none;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+
+            border-color: #9b743a;
+
+            box-shadow:
+                0 0 0 3px rgba(155,116,58,.10);
+        }
+
+        .form-group textarea {
+
+            resize: vertical;
+
+            min-height: 110px;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .btn {
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 12px 18px;
+
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+
+            width: 100%;
+
+            background: #9b743a;
+
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #805d2d;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 11px 13px;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+        }
+
+        .message.error {
+
+            display: block;
+
+            background: #fce8e8;
+
+            color: #a12626;
+        }
+
+        .message.success {
+
+            display: block;
+
+            background: #e8f7ec;
+
+            color: #24723b;
+        }
+
+
+        /* =========================
+           DASHBOARD
+        ========================= */
+
+        .dashboard {
+            min-height: 100vh;
+        }
+
+        .topbar {
+
+            height: 75px;
+
+            background: white;
+
+            border-bottom: 1px solid #e8e0d5;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .brand img {
+
+            width: 48px;
+
+            height: 48px;
+
+            object-fit: contain;
+        }
+
+        .brand h2 {
+
+            font-family: "Playfair Display", serif;
+
+            color: #9b743a;
+
+            font-size: 21px;
+        }
+
+        .brand span {
+
+            color: #888;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 30px 20px 60px;
+        }
+
+        .welcome {
+
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+
+            font-size: 28px;
+
+            margin-bottom: 5px;
+        }
+
+        .welcome p {
+
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            border: 1px solid #eee5da;
+        }
+
+        .stat-card span {
+
+            color: #888;
+
+            font-size: 13px;
+        }
+
+        .stat-card strong {
+
+            display: block;
+
+            color: #9b743a;
+
+            font-size: 28px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                380px 1fr;
+
+            gap: 25px;
+
+            align-items: start;
+        }
+
+        .card {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            border: 1px solid #eee5da;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.04);
+        }
+
+        .card-title {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .card-title h2 {
+
+            font-size: 20px;
+        }
+
+
+        /* =========================
+           PRODUCT
+        ========================= */
+
+        .products-list {
+
+            display: grid;
+
+            gap: 15px;
+        }
+
+        .product {
+
+            display: grid;
+
+            grid-template-columns:
+                110px 1fr auto;
+
+            gap: 16px;
+
+            align-items: center;
+
+            padding: 13px;
+
+            border: 1px solid #eee5da;
+
+            border-radius: 15px;
+        }
+
+        .product-image {
+
+            width: 110px;
+
+            height: 100px;
+
+            background: #f5f1eb;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+        }
+
+        .product-image img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+        .product-info h3 {
+
+            font-size: 16px;
+
+            margin-bottom: 5px;
+        }
+
+        .product-info p {
+
+            color: #777;
+
+            font-size: 12px;
+
+            line-height: 1.7;
+
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+
+            color: #9b743a;
+
+            font-weight: 800;
+        }
+
+        .category {
+
+            display: inline-block;
+
+            background: #f5efe5;
+
+            color: #8a652e;
+
+            padding: 3px 8px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+        .product-actions {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .edit-btn {
+
+            background: #eee9df;
+
+            color: #765725;
+        }
+
+        .delete-btn {
+
+            background: #f8e7e7;
+
+            color: #a12626;
+        }
+
+
+        /* =========================
+           PREVIEW
+        ========================= */
+
+        .preview {
+
+            display: none;
+
+            margin-top: 10px;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: #f3f0eb;
+        }
+
+        .preview img {
+
+            width: 100%;
+
+            max-height: 220px;
+
+            object-fit: contain;
+        }
+
+        .file-note {
+
+            color: #888;
+
+            font-size: 11px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty,
+        .loading {
+
+            text-align: center;
+
+            padding: 40px 20px;
+
+            color: #888;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .brand h2 {
+                font-size: 17px;
+            }
+
+            .brand span {
+                display: none;
+            }
+
+            .container {
+                padding: 20px 12px 40px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .product {
+
+                grid-template-columns:
+                    75px 1fr;
+            }
+
+            .product-image {
+
+                width: 75px;
+
+                height: 75px;
+            }
+
+            .product-actions {
+
+                grid-column: 1 / -1;
+
+                flex-direction: row;
+            }
+
+            .product-actions button {
+
+                flex: 1;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     LOGIN
+===================================================== -->
+
+<section
+    id="loginPage"
+    class="login-page"
+>
+
+    <div class="login-box">
+
+        <div class="login-logo">
+
+            <img
+                src="images/logo.png"
+                alt="Tasbehaaa Logo"
+            >
+
+            <h1>
+                Tasbehaaa
+            </h1>
+
+            <p>
+                For Hand Made Mirrors
+            </p>
+
+        </div>
+
+
+        <form id="loginForm">
+
+
+            <div class="form-group">
+
+                <label>
+                    البريد الإلكتروني
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="admin@example.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    كلمة المرور
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="********"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="loginButton"
+            >
+                تسجيل الدخول
+            </button>
+
+
+            <div
+                id="loginMessage"
+                class="message"
+            ></div>
+
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section
+    id="dashboard"
+    class="dashboard hidden"
+>
+
+
+    <header class="topbar">
+
+
+        <div class="brand">
+
+            <img
+                src="images/logo.png"
+                alt="Tasbehaaa Logo"
+            >
+
+            <div>
+
+                <h2>
+                    Tasbehaaa
+                </h2>
+
+                <span>
+                    For Hand Made Mirrors — Admin
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="btn"
+            id="logoutButton"
+            style="
+                background:#f4eeee;
+                color:#9b3030;
+            "
+        >
+            تسجيل الخروج
+        </button>
+
+
+    </header>
+
+
+
+    <main class="container">
+
+
+        <div class="welcome">
+
+            <h1>
+                لوحة التحكم
+            </h1>
+
+            <p>
+                إدارة منتجات Tasbehaaa For Hand Made Mirrors
+            </p>
+
+        </div>
+
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <span>
+                    إجمالي المنتجات
+                </span>
+
+                <strong id="totalProducts">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    المرايات
+                </span>
+
+                <strong id="mirrorsCount">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    باقي المنتجات
+                </span>
+
+                <strong id="otherProducts">
+                    0
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="grid">
+
+
+            <!-- ADD PRODUCT -->
+
+            <div class="card">
+
+
+                <div class="card-title">
+
+                    <h2 id="formTitle">
+                        إضافة منتج
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="cancelEdit"
+                        style="
+                            display:none;
+                            background:#eee;
+                            color:#555;
+                        "
+                    >
+                        إلغاء
+                    </button>
+
+                </div>
+
+
+
+                <form id="productForm">
+
+
+                    <input
+                        type="hidden"
+                        id="productId"
+                    >
+
+
+                    <div class="form-group">
+
+                        <label>
+                            اسم المنتج
+                        </label>
+
+                        <input
+                            type="text"
+                            id="productName"
+                            placeholder="مثال: مراية زفاف فاخرة"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            وصف المنتج
+                        </label>
+
+                        <textarea
+                            id="productDescription"
+                            placeholder="اكتب وصف المنتج..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            السعر
+                        </label>
+
+                        <input
+                            type="number"
+                            id="productPrice"
+                            min="0"
+                            step="0.01"
+                            placeholder="950"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            التصنيف
+                        </label>
+
+                        <select
+                            id="productCategory"
+                            required
+                        >
+
+                            <option value="">
+                                اختر التصنيف
+                            </option>
+
+                            <option value="مرايات">
+                                مرايات
+                            </option>
+
+                            <option value="ورد">
+                                ورد
+                            </option>
+
+                            <option value="تطريز">
+                                تطريز
+                            </option>
+
+                            <option value="بصمات">
+                                بصمات
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            صورة المنتج
+                        </label>
+
+                        <input
+                            type="file"
+                            id="productImage"
+                            accept="image/*"
+                        >
+
+                        <div class="file-note">
+                            JPG / PNG / WEBP
+                        </div>
+
+
+                        <div
+                            class="preview"
+                            id="imagePreview"
+                        >
+
+                            <img
+                                id="previewImage"
+                                src=""
+                                alt="Preview"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn"
+                        id="saveButton"
+                        style="
+                            width:100%;
+                            background:#9b743a;
+                            color:white;
+                        "
+                    >
+                        إضافة المنتج
+                    </button>
+
+
+                    <div
+                        id="productMessage"
+                        class="message"
+                    ></div>
+
+
+                </form>
+
+            </div>
+
+
+
+            <!-- PRODUCTS -->
+
+            <div class="card">
+
+
+                <div class="card-title">
+
+                    <h2>
+                        المنتجات
+                    </h2>
+
+
+                    <button
+                        class="btn"
+                        id="refreshButton"
+                        style="
+                            background:#eee9df;
+                            color:#765725;
+                        "
+                    >
+                        تحديث
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="productsList"
+                    class="products-list"
+                >
+
+                    <div class="loading">
+                        جاري تحميل المنتجات...
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</section>
+
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE SETTINGS
+===================================================== */
+
+
+const SUPABASE_URL =
+    "https://nzkgjobzxgvroyzmvvdi.supabase.co";
+
+
+/*
+   مهم جداً:
+
+   هنا ضع Publishable Key الخاص بمشروعك.
+
+   لا تستخدم Service Role Key.
+*/
+
+
+const SUPABASE_KEY =
+    "ضع-Publishable-Key-هنا";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+
+const loginPage =
+    document.getElementById("loginPage");
+
+
+const dashboard =
+    document.getElementById("dashboard");
+
+
+const loginForm =
+    document.getElementById("loginForm");
+
+
+const loginMessage =
+    document.getElementById("loginMessage");
+
+
+const loginButton =
+    document.getElementById("loginButton");
+
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+
+const productForm =
+    document.getElementById("productForm");
+
+
+const productsList =
+    document.getElementById("productsList");
+
+
+const productMessage =
+    document.getElementById("productMessage");
+
+
+const productImage =
+    document.getElementById("productImage");
+
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+
+const previewImage =
+    document.getElementById("previewImage");
+
+
+const productId =
+    document.getElementById("productId");
+
+
+const productName =
+    document.getElementById("productName");
+
+
+const productDescription =
+    document.getElementById("productDescription");
+
+
+const productPrice =
+    document.getElementById("productPrice");
+
+
+const productCategory =
+    document.getElementById("productCategory");
+
+
+const saveButton =
+    document.getElementById("saveButton");
+
+
+const formTitle =
+    document.getElementById("formTitle");
+
+
+const cancelEdit =
+    document.getElementById("cancelEdit");
+
+
+const totalProducts =
+    document.getElementById("totalProducts");
+
+
+const mirrorsCount =
+    document.getElementById("mirrorsCount");
+
+
+const otherProducts =
+    document.getElementById("otherProducts");
+
+
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+
+function showLoginMessage(
+    text,
+    type = "error"
+) {
+
+    loginMessage.textContent = text;
+
+    loginMessage.className =
+        "message " + type;
+
+}
+
+
+function showProductMessage(
+    text,
+    type = "error"
+) {
+
+    productMessage.textContent = text;
+
+    productMessage.className =
+        "message " + type;
+
+}
+
+
+
+/* =====================================================
+   SHOW LOGIN
+===================================================== */
+
+
+function showLoginPage() {
+
+    loginPage.classList.remove(
+        "hidden"
+    );
+
+    dashboard.classList.add(
+        "hidden"
+    );
+
+}
+
+
+
+/* =====================================================
+   SHOW DASHBOARD
+===================================================== */
+
+
+function showDashboard() {
+
+    loginPage.classList.add(
+        "hidden"
+    );
+
+    dashboard.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+
+/* =====================================================
+   CHECK SESSION
+===================================================== */
+
+
+async function checkSession() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    if (error) {
+
+        console.error(error);
+
+        showLoginPage();
+
+        return;
+
+    }
+
+
+    if (data.session) {
+
+        await verifyAdmin(
+            data.session.user.id
+        );
+
+    } else {
+
+        showLoginPage();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   VERIFY ADMIN
+===================================================== */
+
+
+async function verifyAdmin(
+    userId
+) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("admin_users")
+            .select("user_id")
+            .eq("user_id", userId)
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(error);
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+        showLoginMessage(
+            "لم يتم إعداد صلاحيات Admin بعد."
+        );
+
+        showLoginPage();
+
+        return false;
+
+    }
+
+
+    if (!data) {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+        showLoginMessage(
+            "هذا الحساب ليس لديه صلاحية Admin."
+        );
+
+        showLoginPage();
+
+        return false;
+
+    }
+
+
+    showDashboard();
+
+    await loadProducts();
+
+    return true;
+
+}
+
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+
+loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("password")
+                .value;
+
+
+        loginButton.disabled =
+            true;
+
+
+        loginButton.textContent =
+            "جاري تسجيل الدخول...";
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .signInWithPassword({
+
+                    email: email,
+
+                    password: password
+
+                });
+
+
+        loginButton.disabled =
+            false;
+
+
+        loginButton.textContent =
+            "تسجيل الدخول";
+
+
+        if (error) {
+
+            showLoginMessage(
+                getArabicError(
+                    error.message
+                )
+            );
+
+            return;
+
+        }
+
+
+        await verifyAdmin(
+            data.user.id
+        );
+
+    }
+);
+
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+
+logoutButton.addEventListener(
+    "click",
+    async function() {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+        showLoginPage();
+
+    }
+);
+
+
+
+/* =====================================================
+   LOAD PRODUCTS
+===================================================== */
+
+
+async function loadProducts() {
+
+    productsList.innerHTML =
+        `
+        <div class="loading">
+            جاري تحميل المنتجات...
+        </div>
+        `;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("products")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        productsList.innerHTML =
+            `
+            <div class="empty">
+                حدث خطأ أثناء تحميل المنتجات.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    updateStats(
+        data || []
+    );
+
+
+    renderProducts(
+        data || []
+    );
+
+}
+
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+
+function updateStats(
+    products
+) {
+
+    totalProducts.textContent =
+        products.length;
+
+
+    const mirrors =
+        products.filter(
+            product =>
+                product.category === "مرايات"
+        ).length;
+
+
+    mirrorsCount.textContent =
+        mirrors;
+
+
+    otherProducts.textContent =
+        products.length -
+        mirrors;
+
+}
+
+
+
+/* =====================================================
+   RENDER PRODUCTS
+===================================================== */
+
+
+function renderProducts(
+    products
+) {
+
+    if (!products.length) {
+
+        productsList.innerHTML =
+            `
+            <div class="empty">
+                لا توجد منتجات حتى الآن.
+                <br>
+                أضف أول منتج من النموذج.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    productsList.innerHTML =
+        products
+            .map(
+                product => {
+
+                    const image =
+                        product.image_url ||
+                        "https://placehold.co/400x300?text=Tasbehaaa";
+
+
+                    return `
+
+                    <div class="product">
+
+                        <div class="product-image">
+
+                            <img
+                                src="${escapeHtml(image)}"
+                                alt="${escapeHtml(product.name)}"
+                                onerror="
+                                    this.src='https://placehold.co/400x300?text=Tasbehaaa'
+                                "
+                            >
+
+                        </div>
+
+
+                        <div class="product-info">
+
+                            <h3>
+                                ${escapeHtml(product.name)}
+                            </h3>
+
+                            <p>
+                                ${
+                                    escapeHtml(
+                                        product.description ||
+                                        "لا يوجد وصف"
+                                    )
+                                }
+                            </p>
+
+                            <div class="product-price">
+
+                                ${
+                                    Number(
+                                        product.price || 0
+                                    ).toLocaleString("ar-EG")
+                                }
+
+                                جنيه
+
+                            </div>
+
+                            <span class="category">
+
+                                ${
+                                    escapeHtml(
+                                        product.category
+                                    )
+                                }
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="product-actions">
+
+                            <button
+                                class="btn edit-btn"
+                                onclick="
+                                    editProduct('${product.id}')
+                                "
+                            >
+                                تعديل
+                            </button>
+
+
+                            <button
+                                class="btn delete-btn"
+                                onclick="
+                                    deleteProduct('${product.id}')
+                                "
+                            >
+                                حذف
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+
+/* =====================================================
+   ADD / UPDATE PRODUCT
+===================================================== */
+
+
+productForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            productName.value.trim();
+
+
+        const description =
+            productDescription.value.trim();
+
+
+        const price =
+            Number(
+                productPrice.value
+            );
+
+
+        const category =
+            productCategory.value;
+
+
+        const file =
+            productImage.files[0];
+
+
+        if (!name) {
+
+            showProductMessage(
+                "اكتب اسم المنتج."
+            );
+
+            return;
+
+        }
+
+
+        if (!category) {
+
+            showProductMessage(
+                "اختر التصنيف."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            isNaN(price) ||
+            price < 0
+        ) {
+
+            showProductMessage(
+                "اكتب سعر صحيح."
+            );
+
+            return;
+
+        }
+
+
+        saveButton.disabled =
+            true;
+
+
+        saveButton.textContent =
+            "جاري الحفظ...";
+
+
+        try {
+
+
+            let imageUrl = null;
+
+
+            /*
+                إذا كان تعديل
+                نحافظ على الصورة القديمة.
+            */
+
+            if (productId.value) {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("products")
+                        .select("image_url")
+                        .eq(
+                            "id",
+                            productId.value
+                        )
+                        .single();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                imageUrl =
+                    data.image_url || null;
+
+            }
+
+
+            /*
+                صورة جديدة
+            */
+
+            if (file) {
+
+                imageUrl =
+                    await uploadImage(
+                        file
+                    );
+
+            }
+
+
+            const productData = {
+
+                name: name,
+
+                description: description,
+
+                price: price,
+
+                category: category,
+
+                image_url: imageUrl
+
+            };
+
+
+            /*
+                UPDATE
+            */
+
+            if (productId.value) {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("products")
+                        .update(
+                            productData
+                        )
+                        .eq(
+                            "id",
+                            productId.value
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showProductMessage(
+                    "تم تعديل المنتج بنجاح.",
+                    "success"
+                );
+
+            }
+
+
+            /*
+                INSERT
+            */
+
+            else {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("products")
+                        .insert([
+                            productData
+                        ]);
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showProductMessage(
+                    "تم إضافة المنتج بنجاح.",
+                    "success"
+                );
+
+            }
+
+
+            resetProductForm();
+
+
+            await loadProducts();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showProductMessage(
+                getArabicError(
+                    error.message
+                )
+            );
+
+        }
+
+
+        saveButton.disabled =
+            false;
+
+
+        saveButton.textContent =
+            productId.value
+                ? "حفظ التعديلات"
+                : "إضافة المنتج";
+
+    }
+);
+
+
+
+/* =====================================================
+   UPLOAD IMAGE
+===================================================== */
+
+
+async function uploadImage(
+    file
+) {
+
+    if (
+        !file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        throw new Error(
+            "الملف المختار ليس صورة."
+        );
+
+    }
+
+
+    const extension =
+        file.name
+            .split(".")
+            .pop();
+
+
+    const fileName =
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2) +
+        "." +
+        extension;
+
+
+    const filePath =
+        "products/" +
+        fileName;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from("product-images")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false
+                }
+            );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from("product-images")
+            .getPublicUrl(
+                filePath
+            );
+
+
+    return data.publicUrl;
+
+}
+
+
+
+/* =====================================================
+   EDIT
+===================================================== */
+
+
+window.editProduct =
+    async function(id) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .select("*")
+                .eq("id", id)
+                .single();
+
+
+        if (error) {
+
+            alert(
+                "حدث خطأ أثناء تحميل المنتج."
+            );
+
+            return;
+
+        }
+
+
+        productId.value =
+            data.id;
+
+
+        productName.value =
+            data.name || "";
+
+
+        productDescription.value =
+            data.description || "";
+
+
+        productPrice.value =
+            data.price || 0;
+
+
+        productCategory.value =
+            data.category || "";
+
+
+        if (data.image_url) {
+
+            previewImage.src =
+                data.image_url;
+
+            imagePreview.style.display =
+                "block";
+
+        }
+
+
+        formTitle.textContent =
+            "تعديل المنتج";
+
+
+        saveButton.textContent =
+            "حفظ التعديلات";
+
+
+        cancelEdit.style.display =
+            "block";
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    };
+
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+
+window.deleteProduct =
+    async function(id) {
+
+        const confirmed =
+            confirm(
+                "هل أنت متأكد من حذف هذا المنتج؟"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            alert(
+                "حدث خطأ أثناء حذف المنتج."
+            );
+
+            return;
+
+        }
+
+
+        await loadProducts();
+
+    };
+
+
+
+/* =====================================================
+   CANCEL EDIT
+===================================================== */
+
+
+cancelEdit.addEventListener(
+    "click",
+    function() {
+
+        resetProductForm();
+
+    }
+);
+
+
+
+/* =====================================================
+   RESET FORM
+===================================================== */
+
+
+function resetProductForm() {
+
+    productForm.reset();
+
+    productId.value = "";
+
+
+    formTitle.textContent =
+        "إضافة منتج";
+
+
+    saveButton.textContent =
+        "إضافة المنتج";
+
+
+    cancelEdit.style.display =
+        "none";
+
+
+    imagePreview.style.display =
+        "none";
+
+
+    previewImage.src = "";
+
+
+    productMessage.className =
+        "message";
+
+
+    productMessage.textContent =
+        "";
+
+}
+
+
+
+/* =====================================================
+   IMAGE PREVIEW
+===================================================== */
+
+
+productImage.addEventListener(
+    "change",
+    function() {
+
+        const file =
+            productImage.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(event) {
+
+                previewImage.src =
+                    event.target.result;
+
+
+                imagePreview.style.display =
+                    "block";
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+);
+
+
+
+/* =====================================================
+   REFRESH
+===================================================== */
+
+
+document
+    .getElementById(
+        "refreshButton"
+    )
+    .addEventListener(
+        "click",
+        loadProducts
+    );
+
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* =====================================================
+   ARABIC ERRORS
+===================================================== */
+
+
+function getArabicError(
+    message
+) {
+
+    if (!message) {
+
+        return "حدث خطأ غير معروف.";
+
+    }
+
+
+    const text =
+        message.toLowerCase();
+
+
+    if (
+        text.includes(
+            "invalid login credentials"
+        )
+    ) {
+
+        return "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+
+    }
+
+
+    if (
+        text.includes(
+            "email not confirmed"
+        )
+    ) {
+
+        return "يجب تأكيد البريد الإلكتروني أولاً.";
+
+    }
+
+
+    if (
+        text.includes(
+            "row-level security"
+        )
+    ) {
+
+        return "تم رفض العملية بسبب صلاحيات قاعدة البيانات.";
+
+    }
+
+
+    if (
+        text.includes(
+            "bucket"
+        )
+    ) {
+
+        return "تأكد من إنشاء Storage Bucket باسم product-images.";
+
+    }
+
+
+    return message;
+
+}
+
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+
+supabaseClient
+    .auth
+    .onAuthStateChange(
+        async function(
+            event,
+            session
+        ) {
+
+            if (session) {
+
+                await verifyAdmin(
+                    session.user.id
+                );
+
+            } else {
+
+                showLoginPage();
+
+            }
+
+        }
+    );
+
+
+
+/* =====================================================
+   START
+===================================================== */
+
+
+checkSession();
+
+
+</script>
+
+
+</body>
+
+  </html>
