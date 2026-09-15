@@ -1,820 +1,636 @@
-/* =========================================================
+/* =====================================================
    TASBEHAAA FOR HAND MADE MIRRORS
-   Main JavaScript
-   Managed By: Tasbeh Mohamed
-   Prepared By: Eng Ahmad
-========================================================= */
+   MAIN WEBSITE SCRIPT
+===================================================== */
 
-
-/* =========================================================
-   SUPABASE CONFIGURATION
-========================================================= */
 
 const SUPABASE_URL =
     "https://nzkgjobzxgvroyzmvvdi.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY =
+
+const SUPABASE_KEY =
     "sb_publishable_8aHDt5z7hV4Ojx69yJx8Fw_HWuFAJYJ";
 
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-/* =========================================================
-   WEBSITE SETTINGS
-========================================================= */
+/* =====================================================
+   STATE
+===================================================== */
 
-const WHATSAPP_NUMBER = "201003089153";
+let products = [];
 
-
-/*
-    These are the available sections.
-
-    IMPORTANT:
-    The ADMIN chooses one of these sections
-    when adding a product.
-
-    Products themselves are NOT written here.
-*/
-
-const CATEGORIES = [
-    {
-        name: "مرايات",
-        icon: "fa-solid fa-gem",
-        description: "Handmade Wedding Mirrors"
-    },
-
-    {
-        name: "صواني الشبكة",
-        icon: "fa-solid fa-ring",
-        description: "Elegant Engagement Trays"
-    },
-
-    {
-        name: "البصمات",
-        icon: "fa-solid fa-fingerprint",
-        description: "Beautiful Fingerprint Keepsakes"
-    },
-
-    {
-        name: "بوكيهات الورد",
-        icon: "fa-solid fa-seedling",
-        description: "Handmade Flower Bouquets"
-    },
-
-    {
-        name: "مرايات الديكور",
-        icon: "fa-regular fa-circle",
-        description: "Decorative Handmade Mirrors"
-    },
-
-    {
-        name: "مرايات بنترست",
-        icon: "fa-solid fa-wand-magic-sparkles",
-        description: "Pinterest Inspired Mirrors"
-    },
-
-    {
-        name: "بصمات كتب الكتاب",
-        icon: "fa-solid fa-heart",
-        description: "Katb Ketab Fingerprints"
-    },
-
-    {
-        name: "Special Gift",
-        icon: "fa-solid fa-gift",
-        description: "Special Handmade Pieces"
-    }
-];
-
-
-/* =========================================================
-   GLOBAL VARIABLES
-========================================================= */
-
-let allProducts = [];
+let filteredProducts = [];
 
 let cart = [];
 
-let currentSearch = "";
+let currentLanguage =
+    localStorage.getItem("tasbehaaa_language") || "ar";
+
+let currentModalProduct = null;
+
+let currentModalImageIndex = 0;
 
 
-/* =========================================================
-   DOM ELEMENTS
-========================================================= */
+/* =====================================================
+   TRANSLATIONS
+===================================================== */
 
-const categoriesContainer =
-    document.getElementById("categoriesContainer");
+const translations = {
+
+    ar: {
+
+        navHome: "الرئيسية",
+        navProducts: "المنتجات",
+        navAbout: "من نحن",
+        navCustom: "طلب خاص",
+        navContact: "تواصل معنا",
+
+        heroEyebrow: "HANDMADE WITH LOVE",
+
+        heroTitle:
+            "تفاصيل صغيرة<br>تصنع ذكرى كبيرة",
+
+        heroText:
+            "منتجات يدوية مميزة للخطوبة والفرح، مصممة خصيصًا لتكون جزءًا من أجمل لحظاتك.",
+
+        shopNow:
+            "اكتشف المنتجات",
+
+        customOrder:
+            "اطلب تصميمك الخاص",
+
+        feature1Title:
+            "Handmade",
+
+        feature1Text:
+            "مصنوع بحب وعناية",
+
+        feature2Title:
+            "Custom Design",
+
+        feature2Text:
+            "تصميم حسب ذوقك",
+
+        feature3Title:
+            "Premium Quality",
+
+        feature3Text:
+            "خامات وجودة مميزة",
+
+        feature4Title:
+            "Wedding Collection",
+
+        feature4Text:
+            "للفرح والخطوبة",
+
+        productsEyebrow:
+            "OUR COLLECTION",
+
+        productsTitle:
+            "منتجاتنا",
+
+        productsText:
+            "اختاري القطعة التي تناسب يومك المميز.",
+
+        searchPlaceholder:
+            "ابحث باسم المنتج أو الكود...",
+
+        allCategories:
+            "كل التصنيفات",
+
+        loading:
+            "جاري تحميل المنتجات...",
+
+        noProductsTitle:
+            "لا توجد منتجات",
+
+        noProductsText:
+            "لم نجد منتجًا مطابقًا لبحثك.",
+
+        aboutEyebrow:
+            "ABOUT TASBEHAAA",
+
+        aboutTitle:
+            "نصنع تفاصيل<br>تستحق أن تُذكر",
+
+        aboutText1:
+            "Tasbehaaa For Hand Made Mirrors علامة تهتم بتقديم منتجات يدوية مميزة لمناسبات الخطوبة والفرح.",
+
+        aboutText2:
+            "من المرايات والصواني إلى البصمات والورد والتطريز، كل قطعة يتم تنفيذها بعناية لتكون ذكرى جميلة تدوم.",
+
+        customEyebrow:
+            "CUSTOM ORDER",
+
+        customTitle:
+            "عندك فكرة؟<br>خلينا ننفذها معًا.",
+
+        customText:
+            "ابعتلنا فكرتك أو صورة التصميم اللي في بالك، ونساعدك نحولها لقطعة مميزة تناسب مناسبتك.",
+
+        contactEyebrow:
+            "GET IN TOUCH",
+
+        contactTitle:
+            "تواصل معنا",
+
+        cartTitle:
+            "سلة المشتريات",
+
+        cartTotal:
+            "الإجمالي",
+
+        checkout:
+            "إتمام الطلب عبر WhatsApp",
+
+        addToCart:
+            "أضف إلى السلة",
+
+        added:
+            "تمت إضافة المنتج إلى السلة",
+
+        emptyCart:
+            "السلة فارغة",
+
+        remove:
+            "حذف",
+
+        quantity:
+            "الكمية",
+
+        productCode:
+            "كود المنتج",
+
+        noImage:
+            "لا توجد صورة",
+
+        loadingError:
+            "حدث خطأ أثناء تحميل المنتجات."
+
+    },
+
+
+    en: {
+
+        navHome: "Home",
+        navProducts: "Products",
+        navAbout: "About",
+        navCustom: "Custom Order",
+        navContact: "Contact",
+
+        heroEyebrow:
+            "HANDMADE WITH LOVE",
+
+        heroTitle:
+            "Small Details<br>Make Big Memories",
+
+        heroText:
+            "Unique handmade products for weddings and engagements, specially created to become part of your most beautiful moments.",
+
+        shopNow:
+            "Explore Products",
+
+        customOrder:
+            "Request Custom Design",
+
+        feature1Title:
+            "Handmade",
+
+        feature1Text:
+            "Made with love and care",
+
+        feature2Title:
+            "Custom Design",
+
+        feature2Text:
+            "Designed for your taste",
+
+        feature3Title:
+            "Premium Quality",
+
+        feature3Text:
+            "Premium materials and quality",
+
+        feature4Title:
+            "Wedding Collection",
+
+        feature4Text:
+            "For weddings & engagements",
+
+        productsEyebrow:
+            "OUR COLLECTION",
+
+        productsTitle:
+            "Our Products",
+
+        productsText:
+            "Choose the piece that matches your special day.",
+
+        searchPlaceholder:
+            "Search by product name or code...",
+
+        allCategories:
+            "All Categories",
+
+        loading:
+            "Loading products...",
+
+        noProductsTitle:
+            "No Products",
+
+        noProductsText:
+            "We couldn't find a matching product.",
+
+        aboutEyebrow:
+            "ABOUT TASBEHAAA",
+
+        aboutTitle:
+            "We Create Details<br>Worth Remembering",
+
+        aboutText1:
+            "Tasbehaaa For Hand Made Mirrors creates unique handmade products specially made for weddings and engagements.",
+
+        aboutText2:
+            "From mirrors and trays to fingerprints, flowers and embroidery, every piece is carefully made to become a beautiful lasting memory.",
+
+        customEyebrow:
+            "CUSTOM ORDER",
+
+        customTitle:
+            "Have an Idea?<br>Let's Create It Together.",
+
+        customText:
+            "Send us your idea or a reference photo and we will help turn it into a unique piece for your special occasion.",
+
+        contactEyebrow:
+            "GET IN TOUCH",
+
+        contactTitle:
+            "Contact Us",
+
+        cartTitle:
+            "Shopping Cart",
+
+        cartTotal:
+            "Total",
+
+        checkout:
+            "Order via WhatsApp",
+
+        addToCart:
+            "Add to Cart",
+
+        added:
+            "Product added to cart",
+
+        emptyCart:
+            "Your cart is empty",
+
+        remove:
+            "Remove",
+
+        quantity:
+            "Quantity",
+
+        productCode:
+            "Product Code",
+
+        noImage:
+            "No Image",
+
+        loadingError:
+            "Error loading products."
+
+    }
+
+};
+
+
+/* =====================================================
+   DOM
+===================================================== */
 
 const productsContainer =
-    document.getElementById("productsContainer");
+    document.getElementById(
+        "productsContainer"
+    );
 
-const emptyProducts =
-    document.getElementById("emptyProducts");
+
+const noProducts =
+    document.getElementById(
+        "noProducts"
+    );
+
+
+const productSearch =
+    document.getElementById(
+        "productSearch"
+    );
+
+
+const categoryFilter =
+    document.getElementById(
+        "categoryFilter"
+    );
+
+
+const languageToggle =
+    document.getElementById(
+        "languageToggle"
+    );
+
 
 const cartButton =
-    document.getElementById("cartButton");
+    document.getElementById(
+        "cartButton"
+    );
+
 
 const cartSidebar =
-    document.getElementById("cartSidebar");
+    document.getElementById(
+        "cartSidebar"
+    );
+
 
 const cartOverlay =
-    document.getElementById("cartOverlay");
+    document.getElementById(
+        "cartOverlay"
+    );
+
 
 const closeCart =
-    document.getElementById("closeCart");
+    document.getElementById(
+        "closeCart"
+    );
+
 
 const cartItems =
-    document.getElementById("cartItems");
+    document.getElementById(
+        "cartItems"
+    );
+
 
 const cartCount =
-    document.getElementById("cartCount");
+    document.getElementById(
+        "cartCount"
+    );
+
 
 const cartTotal =
-    document.getElementById("cartTotal");
-
-const mobileMenuButton =
-    document.getElementById("mobileMenuButton");
-
-const mobileMenu =
-    document.getElementById("mobileMenu");
-
-const searchButton =
-    document.getElementById("searchButton");
-
-const searchOverlay =
-    document.getElementById("searchOverlay");
-
-const closeSearch =
-    document.getElementById("closeSearch");
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const scrollTop =
-    document.getElementById("scrollTop");
-
-const currentYear =
-    document.getElementById("currentYear");
+    document.getElementById(
+        "cartTotal"
+    );
 
 
-/* =========================================================
-   INITIALIZE WEBSITE
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    initializeYear();
-
-    loadCart();
-
-    renderCategories();
-
-    setupNavigation();
-
-    setupSearch();
-
-    setupCart();
-
-    setupScrollTop();
-
-    await loadProducts();
-
-});
+const checkoutButton =
+    document.getElementById(
+        "checkoutButton"
+    );
 
 
-/* =========================================================
-   CURRENT YEAR
-========================================================= */
+const productModal =
+    document.getElementById(
+        "productModal"
+    );
 
-function initializeYear() {
 
-    if (!currentYear) {
-        return;
+const closeModal =
+    document.getElementById(
+        "closeModal"
+    );
+
+
+const modalMainImage =
+    document.getElementById(
+        "modalMainImage"
+    );
+
+
+const modalPrev =
+    document.getElementById(
+        "modalPrev"
+    );
+
+
+const modalNext =
+    document.getElementById(
+        "modalNext"
+    );
+
+
+const modalThumbnails =
+    document.getElementById(
+        "modalThumbnails"
+    );
+
+
+const modalDiscount =
+    document.getElementById(
+        "modalDiscount"
+    );
+
+
+const modalCode =
+    document.getElementById(
+        "modalCode"
+    );
+
+
+const modalName =
+    document.getElementById(
+        "modalName"
+    );
+
+
+const modalCategory =
+    document.getElementById(
+        "modalCategory"
+    );
+
+
+const modalOldPrice =
+    document.getElementById(
+        "modalOldPrice"
+    );
+
+
+const modalPrice =
+    document.getElementById(
+        "modalPrice"
+    );
+
+
+const modalDescription =
+    document.getElementById(
+        "modalDescription"
+    );
+
+
+const modalAddToCart =
+    document.getElementById(
+        "modalAddToCart"
+    );
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        loadCart();
+
+        applyLanguage();
+
+        setupEvents();
+
+        await loadProducts();
+
     }
-
-    currentYear.textContent =
-        new Date().getFullYear();
-
-}
+);
 
 
-/* =========================================================
-   LOAD PRODUCTS FROM SUPABASE
-========================================================= */
+/* =====================================================
+   EVENTS
+===================================================== */
 
-async function loadProducts() {
+function setupEvents() {
 
-    if (!productsContainer) {
-        return;
-    }
-
-    showProductsLoading();
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .order("created_at", {
-                    ascending: false
-                });
+    productSearch.addEventListener(
+        "input",
+        filterProducts
+    );
 
 
-        if (error) {
+    categoryFilter.addEventListener(
+        "change",
+        filterProducts
+    );
 
-            console.error(
-                "Supabase products error:",
-                error
+
+    languageToggle.addEventListener(
+        "click",
+        toggleLanguage
+    );
+
+
+    cartButton.addEventListener(
+        "click",
+        openCart
+    );
+
+
+    closeCart.addEventListener(
+        "click",
+        closeCartSidebar
+    );
+
+
+    cartOverlay.addEventListener(
+        "click",
+        closeCartSidebar
+    );
+
+
+    closeModal.addEventListener(
+        "click",
+        closeProductModal
+    );
+
+
+    modalPrev.addEventListener(
+        "click",
+        function() {
+
+            changeModalImage(-1);
+
+        }
+    );
+
+
+    modalNext.addEventListener(
+        "click",
+        function() {
+
+            changeModalImage(1);
+
+        }
+    );
+
+
+    modalAddToCart.addEventListener(
+        "click",
+        function() {
+
+            if (!currentModalProduct) {
+                return;
+            }
+
+            addToCart(
+                currentModalProduct
             );
 
-            showProductsError();
+            closeProductModal();
 
-            return;
         }
+    );
 
 
-        allProducts = data || [];
+    checkoutButton.addEventListener(
+        "click",
+        checkoutWhatsApp
+    );
 
 
-        renderProducts(allProducts);
+    document
+    .getElementById("menuButton")
+    .addEventListener(
+        "click",
+        function() {
 
-    }
+            document
+            .getElementById("mobileMenu")
+            .classList.toggle("open");
 
-    catch (error) {
-
-        console.error(
-            "Unexpected products error:",
-            error
-        );
-
-        showProductsError();
-
-    }
-
-}
+        }
+    );
 
 
-/* =========================================================
-   PRODUCTS LOADING
-========================================================= */
+    document
+    .querySelectorAll(".mobile-menu a")
+    .forEach(link => {
 
-function showProductsLoading() {
-
-    productsContainer.innerHTML = `
-        <div class="loading-message">
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            <p style="margin-top:10px;">
-                Loading products...
-            </p>
-        </div>
-    `;
-
-}
-
-
-/* =========================================================
-   PRODUCTS ERROR
-========================================================= */
-
-function showProductsError() {
-
-    productsContainer.innerHTML = `
-        <div class="loading-message">
-
-            <i class="fa-solid fa-triangle-exclamation"></i>
-
-            <p style="margin-top:10px;">
-                We couldn't load the products right now.
-            </p>
-
-            <button
-                type="button"
-                onclick="loadProducts()"
-                class="btn btn-primary"
-                style="margin-top:18px;"
-            >
-                Try Again
-            </button>
-
-        </div>
-    `;
-
-}
-
-
-/* =========================================================
-   RENDER CATEGORIES
-========================================================= */
-
-function renderCategories() {
-
-    if (!categoriesContainer) {
-        return;
-    }
-
-
-    categoriesContainer.innerHTML = "";
-
-
-    CATEGORIES.forEach((category) => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "category-card";
-
-
-        card.dataset.category =
-            category.name;
-
-
-        card.innerHTML = `
-
-            <div class="category-icon">
-
-                <i class="${category.icon}"></i>
-
-            </div>
-
-
-            <h3>
-                ${escapeHTML(category.name)}
-            </h3>
-
-
-            <p>
-                ${escapeHTML(category.description)}
-            </p>
-
-        `;
-
-
-        card.addEventListener(
+        link.addEventListener(
             "click",
-            () => {
+            function() {
 
-                scrollToCategory(
-                    category.name
-                );
+                document
+                .getElementById("mobileMenu")
+                .classList.remove("open");
 
             }
         );
-
-
-        categoriesContainer.appendChild(card);
 
     });
-
-}
-
-
-/* =========================================================
-   RENDER PRODUCTS
-========================================================= */
-
-function renderProducts(products) {
-
-    if (!productsContainer) {
-        return;
-    }
-
-
-    productsContainer.innerHTML = "";
-
-
-    if (!products || products.length === 0) {
-
-        if (emptyProducts) {
-            emptyProducts.style.display = "block";
-        }
-
-        return;
-    }
-
-
-    if (emptyProducts) {
-        emptyProducts.style.display = "none";
-    }
-
-
-    /*
-        Search filtering
-    */
-
-    let filteredProducts =
-        filterProducts(products);
-
-
-    if (filteredProducts.length === 0) {
-
-        productsContainer.innerHTML = `
-
-            <div class="loading-message">
-
-                <div class="empty-icon">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                </div>
-
-                <h3>
-                    No Products Found
-                </h3>
-
-                <p>
-                    Try another search.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    /*
-        Group products by category
-    */
-
-    const grouped =
-        groupProductsByCategory(
-            filteredProducts
-        );
-
-
-    /*
-        Render every category
-    */
-
-    Object.keys(grouped).forEach(
-        (categoryName) => {
-
-            const productsInCategory =
-                grouped[categoryName];
-
-
-            const section =
-                document.createElement("div");
-
-            section.className =
-                "product-section";
-
-
-            section.id =
-                createCategoryId(categoryName);
-
-
-            const title =
-                document.createElement("div");
-
-            title.className =
-                "product-section-title";
-
-
-            title.innerHTML = `
-
-                <h3>
-                    ${escapeHTML(categoryName)}
-                </h3>
-
-                <span>
-                    ${productsInCategory.length}
-                    ${productsInCategory.length === 1
-                        ? "Product"
-                        : "Products"}
-                </span>
-
-            `;
-
-
-            const grid =
-                document.createElement("div");
-
-            grid.className =
-                "products-container";
-
-
-            productsInCategory.forEach(
-                (product) => {
-
-                    grid.appendChild(
-                        createProductCard(product)
-                    );
-
-                }
-            );
-
-
-            section.appendChild(title);
-
-            section.appendChild(grid);
-
-            productsContainer.appendChild(section);
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   GROUP PRODUCTS BY CATEGORY
-========================================================= */
-
-function groupProductsByCategory(products) {
-
-    const groups = {};
-
-
-    products.forEach((product) => {
-
-        const category =
-            product.category &&
-            product.category.trim()
-                ? product.category.trim()
-                : "Special Gift";
-
-
-        if (!groups[category]) {
-            groups[category] = [];
-        }
-
-
-        groups[category].push(product);
-
-    });
-
-
-    return groups;
-
-}
-
-
-/* =========================================================
-   CREATE PRODUCT CARD
-========================================================= */
-
-function createProductCard(product) {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "product-card";
-
-
-    const imageURL =
-        product.image_url &&
-        product.image_url.trim()
-            ? product.image_url.trim()
-            : "";
-
-
-    const productName =
-        product.name || "Handmade Product";
-
-
-    const description =
-        product.description ||
-        "Beautiful handmade piece created with love.";
-
-
-    const price =
-        Number(product.price) || 0;
-
-
-    const imageHTML =
-        imageURL
-
-            ? `
-                <img
-                    src="${escapeAttribute(imageURL)}"
-                    alt="${escapeAttribute(productName)}"
-                    loading="lazy"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                >
-
-                <div
-                    class="product-image-placeholder"
-                    style="display:none;"
-                >
-
-                    <i class="fa-regular fa-gem"></i>
-
-                    <span>
-                        TASBEHAAA
-                    </span>
-
-                </div>
-            `
-
-            : `
-                <div class="product-image-placeholder">
-
-                    <i class="fa-regular fa-gem"></i>
-
-                    <span>
-                        TASBEHAAA
-                    </span>
-
-                </div>
-            `;
-
-
-    card.innerHTML = `
-
-        <div class="product-image">
-
-            ${imageHTML}
-
-        </div>
-
-
-        <div class="product-info">
-
-            <span class="product-category">
-
-                ${escapeHTML(
-                    product.category || "Special Gift"
-                )}
-
-            </span>
-
-
-            <h3 class="product-title">
-
-                ${escapeHTML(productName)}
-
-            </h3>
-
-
-            <p class="product-description">
-
-                ${escapeHTML(description)}
-
-            </p>
-
-
-            <div class="product-bottom">
-
-                <div class="product-price">
-
-                    ${formatPrice(price)}
-
-                    <span>
-                        EGP
-                    </span>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="add-to-cart"
-                    aria-label="Add to cart"
-                >
-
-                    <i class="fa-solid fa-plus"></i>
-
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    const addButton =
-        card.querySelector(".add-to-cart");
-
-
-    addButton.addEventListener(
-        "click",
-        () => {
-
-            addToCart(product);
-
-        }
-    );
-
-
-    return card;
-
-}
-
-
-/* =========================================================
-   PRICE FORMAT
-========================================================= */
-
-function formatPrice(price) {
-
-    return new Intl.NumberFormat(
-        "en-EG",
-        {
-            maximumFractionDigits: 2
-        }
-    ).format(price);
-
-}
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-function setupSearch() {
-
-    if (
-        !searchButton ||
-        !searchOverlay ||
-        !closeSearch
-    ) {
-        return;
-    }
-
-
-    searchButton.addEventListener(
-        "click",
-        () => {
-
-            searchOverlay.classList.add(
-                "active"
-            );
-
-
-            setTimeout(() => {
-
-                if (searchInput) {
-                    searchInput.focus();
-                }
-
-            }, 100);
-
-        }
-    );
-
-
-    closeSearch.addEventListener(
-        "click",
-        closeSearchOverlay
-    );
-
-
-    searchOverlay.addEventListener(
-        "click",
-        (event) => {
-
-            if (
-                event.target ===
-                searchOverlay
-            ) {
-
-                closeSearchOverlay();
-
-            }
-
-        }
-    );
-
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            () => {
-
-                currentSearch =
-                    searchInput.value.trim()
-                        .toLowerCase();
-
-
-                renderProducts(
-                    allProducts
-                );
-
-            }
-        );
-
-    }
 
 
     document.addEventListener(
         "keydown",
-        (event) => {
+        function(event) {
 
-            if (event.key === "Escape") {
+            if (
+                event.key === "Escape"
+            ) {
 
-                closeSearchOverlay();
+                closeProductModal();
 
                 closeCartSidebar();
 
@@ -826,238 +642,1110 @@ function setupSearch() {
 }
 
 
-function closeSearchOverlay() {
+/* =====================================================
+   LOAD PRODUCTS
+===================================================== */
 
-    if (!searchOverlay) {
+async function loadProducts() {
+
+    productsContainer.innerHTML = `
+
+        <div class="products-loading">
+
+            <div class="loader"></div>
+
+            <p>
+                ${
+                    translations[currentLanguage]
+                    .loading
+                }
+            </p>
+
+        </div>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("products")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Supabase Error:",
+            error
+        );
+
+
+        productsContainer.innerHTML = `
+
+            <div class="products-error">
+
+                <h3>
+                    ${
+                        translations[currentLanguage]
+                        .loadingError
+                    }
+                </h3>
+
+                <button
+                    onclick="loadProducts()"
+                >
+                    Retry
+                </button>
+
+            </div>
+
+        `;
+
         return;
+
     }
 
-    searchOverlay.classList.remove(
-        "active"
-    );
+
+    products =
+        data || [];
+
+
+    filteredProducts =
+        [...products];
+
+
+    buildCategories();
+
+    renderProducts();
 
 }
 
 
-/* =========================================================
-   FILTER PRODUCTS
-========================================================= */
+/* =====================================================
+   BUILD CATEGORIES DYNAMICALLY
+===================================================== */
 
-function filterProducts(products) {
+function buildCategories() {
 
-    if (!currentSearch) {
-        return products;
-    }
-
-
-    return products.filter(
-        (product) => {
-
-            const searchableText = [
-
-                product.name,
-
-                product.description,
-
-                product.category
-
-            ]
+    const categories =
+        [
+            ...new Set(
+                products
+                .map(
+                    product =>
+                        product.category
+                )
                 .filter(Boolean)
-                .join(" ")
-                .toLowerCase();
+            )
+        ];
 
 
-            return searchableText.includes(
-                currentSearch
-            );
+    categoryFilter.innerHTML = `
 
-        }
-    );
+        <option value="">
+            ${
+                translations[currentLanguage]
+                .allCategories
+            }
+        </option>
 
-}
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function setupNavigation() {
-
-    if (
-        !mobileMenuButton ||
-        !mobileMenu
-    ) {
-        return;
-    }
+    `;
 
 
-    mobileMenuButton.addEventListener(
-        "click",
-        () => {
+    categories.forEach(
+        category => {
 
-            mobileMenu.classList.toggle(
-                "active"
-            );
-
-
-            const icon =
-                mobileMenuButton.querySelector(
-                    "i"
+            const option =
+                document.createElement(
+                    "option"
                 );
 
+            option.value =
+                category;
 
-            if (
-                mobileMenu.classList.contains(
-                    "active"
-                )
-            ) {
+            option.textContent =
+                category;
 
-                icon.className =
-                    "fa-solid fa-xmark";
-
-            }
-
-            else {
-
-                icon.className =
-                    "fa-solid fa-bars";
-
-            }
+            categoryFilter.appendChild(
+                option
+            );
 
         }
     );
 
-
-    const mobileLinks =
-        mobileMenu.querySelectorAll("a");
+}
 
 
-    mobileLinks.forEach(
-        (link) => {
+/* =====================================================
+   FILTER
+===================================================== */
 
-            link.addEventListener(
-                "click",
-                () => {
+function filterProducts() {
 
-                    mobileMenu.classList.remove(
-                        "active"
+    const search =
+        productSearch.value
+        .trim()
+        .toLowerCase();
+
+
+    const selectedCategory =
+        categoryFilter.value;
+
+
+    filteredProducts =
+        products.filter(
+            product => {
+
+                const searchableText =
+                    [
+
+                        product.product_code,
+
+                        product.name,
+
+                        product.name_ar,
+
+                        product.name_en,
+
+                        product.description,
+
+                        product.description_ar,
+
+                        product.description_en,
+
+                        product.category
+
+                    ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    searchableText.includes(
+                        search
                     );
 
 
-                    const icon =
-                        mobileMenuButton.querySelector(
-                            "i"
-                        );
+                const matchesCategory =
+                    !selectedCategory ||
+                    product.category ===
+                        selectedCategory;
 
 
-                    icon.className =
-                        "fa-solid fa-bars";
+                return (
+                    matchesSearch &&
+                    matchesCategory
+                );
+
+            }
+        );
+
+
+    renderProducts();
+
+}
+
+
+/* =====================================================
+   RENDER PRODUCTS
+===================================================== */
+
+function renderProducts() {
+
+    if (!filteredProducts.length) {
+
+        productsContainer.innerHTML = "";
+
+        noProducts.classList.remove(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+    noProducts.classList.add(
+        "hidden"
+    );
+
+
+    productsContainer.innerHTML =
+        filteredProducts
+        .map(
+            product =>
+                createProductCard(
+                    product
+                )
+        )
+        .join("");
+
+
+    attachProductEvents();
+
+}
+
+
+/* =====================================================
+   PRODUCT CARD
+===================================================== */
+
+function createProductCard(product) {
+
+    const images =
+        getProductImages(
+            product
+        );
+
+
+    const firstImage =
+        images.length
+        ? images[0]
+        : "";
+
+
+    const price =
+        Number(
+            product.price
+        ) || 0;
+
+
+    const discount =
+        Number(
+            product.discount_percent
+        ) || 0;
+
+
+    const finalPrice =
+        calculateFinalPrice(
+            price,
+            discount
+        );
+
+
+    const name =
+        getProductName(
+            product
+        );
+
+
+    const description =
+        getProductDescription(
+            product
+        );
+
+
+    return `
+
+        <article
+            class="product-card"
+            data-product-id="${product.id}"
+        >
+
+            <div class="product-card-image">
+
+                ${
+                    firstImage
+                    ?
+
+                    `
+
+                    <img
+                        src="${escapeAttribute(firstImage)}"
+                        alt="${escapeAttribute(name)}"
+                        loading="lazy"
+                    >
+
+                    `
+
+                    :
+
+                    `
+
+                    <div class="card-no-image">
+                        ${
+                            translations[
+                                currentLanguage
+                            ].noImage
+                        }
+                    </div>
+
+                    `
+                }
+
+
+                ${
+                    discount > 0
+
+                    ?
+
+                    `
+
+                    <span class="discount-badge">
+
+                        -${formatNumber(discount)}%
+
+                    </span>
+
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
+                    images.length > 1
+
+                    ?
+
+                    `
+
+                    <span class="image-count">
+
+                        ${images.length} 📷
+
+                    </span>
+
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                <button
+                    class="quick-view-button"
+                    data-action="view"
+                    data-id="${product.id}"
+                >
+                    👁
+                </button>
+
+            </div>
+
+
+            <div class="product-card-body">
+
+                <span class="product-code-badge">
+
+                    ${escapeHtml(
+                        product.product_code ||
+                        ""
+                    )}
+
+                </span>
+
+
+                <h3 class="product-card-title">
+
+                    ${escapeHtml(name)}
+
+                </h3>
+
+
+                <p class="product-card-category">
+
+                    ${escapeHtml(
+                        product.category ||
+                        ""
+                    )}
+
+                </p>
+
+
+                ${
+                    description
+
+                    ?
+
+                    `
+
+                    <p class="product-card-description">
+
+                        ${escapeHtml(
+                            truncateText(
+                                description,
+                                85
+                            )
+                        )}
+
+                    </p>
+
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                <div class="product-price-row">
+
+                    ${
+                        discount > 0
+
+                        ?
+
+                        `
+
+                        <span class="old-price">
+
+                            ${formatPrice(price)}
+
+                        </span>
+
+                        `
+
+                        :
+
+                        ""
+                    }
+
+
+                    <strong class="new-price">
+
+                        ${formatPrice(finalPrice)}
+
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="add-cart-button"
+                    data-action="cart"
+                    data-id="${product.id}"
+                >
+
+                    🛒
+
+                    ${
+                        translations[
+                            currentLanguage
+                        ].addToCart
+                    }
+
+                </button>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =====================================================
+   ATTACH PRODUCT EVENTS
+===================================================== */
+
+function attachProductEvents() {
+
+    document
+    .querySelectorAll(
+        "[data-action='view']"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+                const product =
+                    findProduct(
+                        this.dataset.id
+                    );
+
+                if (product) {
+
+                    openProductModal(
+                        product
+                    );
 
                 }
-            );
 
-        }
+            }
+        );
+
+    });
+
+
+    document
+    .querySelectorAll(
+        "[data-action='cart']"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function(event) {
+
+                event.stopPropagation();
+
+                const product =
+                    findProduct(
+                        this.dataset.id
+                    );
+
+                if (product) {
+
+                    addToCart(
+                        product
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+
+    document
+    .querySelectorAll(
+        ".product-card"
+    )
+    .forEach(card => {
+
+        card.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target.closest(
+                        "button"
+                    )
+                ) {
+                    return;
+                }
+
+
+                const product =
+                    findProduct(
+                        this.dataset.productId
+                    );
+
+
+                if (product) {
+
+                    openProductModal(
+                        product
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   PRODUCT HELPERS
+===================================================== */
+
+function findProduct(id) {
+
+    return products.find(
+        product =>
+            String(product.id) ===
+            String(id)
     );
 
 }
 
 
-/* =========================================================
-   CART
-========================================================= */
+function getProductImages(product) {
 
-function setupCart() {
+    if (
+        Array.isArray(
+            product.image_urls
+        ) &&
+        product.image_urls.length
+    ) {
 
-    if (cartButton) {
-
-        cartButton.addEventListener(
-            "click",
-            openCartSidebar
-        );
-
-    }
-
-
-    if (closeCart) {
-
-        closeCart.addEventListener(
-            "click",
-            closeCartSidebar
-        );
+        return product.image_urls
+            .filter(Boolean);
 
     }
 
 
-    if (cartOverlay) {
+    if (
+        product.image_url
+    ) {
 
-        cartOverlay.addEventListener(
-            "click",
-            closeCartSidebar
-        );
+        return [
+            product.image_url
+        ];
 
     }
+
+
+    return [];
 
 }
 
 
-function openCartSidebar() {
+function getProductName(product) {
 
-    if (!cartSidebar) {
+    if (
+        currentLanguage === "en"
+    ) {
+
+        return (
+            product.name_en ||
+            product.name_ar ||
+            product.name ||
+            product.product_code ||
+            "Product"
+        );
+
+    }
+
+
+    return (
+        product.name_ar ||
+        product.name_en ||
+        product.name ||
+        product.product_code ||
+        "منتج"
+    );
+
+}
+
+
+function getProductDescription(product) {
+
+    if (
+        currentLanguage === "en"
+    ) {
+
+        return (
+            product.description_en ||
+            product.description_ar ||
+            product.description ||
+            ""
+        );
+
+    }
+
+
+    return (
+        product.description_ar ||
+        product.description_en ||
+        product.description ||
+        ""
+    );
+
+}
+
+
+function calculateFinalPrice(
+    price,
+    discount
+) {
+
+    if (
+        !discount ||
+        discount <= 0
+    ) {
+
+        return price;
+
+    }
+
+
+    return (
+        price -
+        (
+            price *
+            discount /
+            100
+        )
+    );
+
+}
+
+
+/* =====================================================
+   PRODUCT MODAL
+===================================================== */
+
+function openProductModal(product) {
+
+    currentModalProduct =
+        product;
+
+
+    currentModalImageIndex =
+        0;
+
+
+    updateModal();
+
+
+    productModal.classList.add(
+        "open"
+    );
+
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
+}
+
+
+function updateModal() {
+
+    if (!currentModalProduct) {
         return;
     }
 
 
-    cartSidebar.classList.add(
-        "active"
-    );
+    const product =
+        currentModalProduct;
 
 
-    if (cartOverlay) {
+    const images =
+        getProductImages(
+            product
+        );
 
-        cartOverlay.classList.add(
-            "active"
+
+    const price =
+        Number(
+            product.price
+        ) || 0;
+
+
+    const discount =
+        Number(
+            product.discount_percent
+        ) || 0;
+
+
+    const finalPrice =
+        calculateFinalPrice(
+            price,
+            discount
+        );
+
+
+    const name =
+        getProductName(
+            product
+        );
+
+
+    const description =
+        getProductDescription(
+            product
+        );
+
+
+    modalCode.textContent =
+        product.product_code
+        ?
+
+        `${
+            translations[
+                currentLanguage
+            ].productCode
+        }: ${product.product_code}`
+
+        :
+
+        "";
+
+
+    modalName.textContent =
+        name;
+
+
+    modalCategory.textContent =
+        product.category || "";
+
+
+    modalDescription.textContent =
+        description;
+
+
+    modalPrice.textContent =
+        formatPrice(
+            finalPrice
+        );
+
+
+    if (discount > 0) {
+
+        modalOldPrice.textContent =
+            formatPrice(
+                price
+            );
+
+        modalOldPrice.style.display =
+            "inline";
+
+
+        modalDiscount.textContent =
+            `-${formatNumber(discount)}%`;
+
+        modalDiscount.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    else {
+
+        modalOldPrice.textContent =
+            "";
+
+        modalOldPrice.style.display =
+            "none";
+
+
+        modalDiscount.classList.add(
+            "hidden"
         );
 
     }
 
 
-    document.body.classList.add(
-        "cart-open"
+    if (images.length) {
+
+        modalMainImage.src =
+            images[
+                currentModalImageIndex
+            ];
+
+        modalMainImage.alt =
+            name;
+
+    }
+
+    else {
+
+        modalMainImage.removeAttribute(
+            "src"
+        );
+
+    }
+
+
+    renderModalThumbnails(
+        images
     );
+
+
+    modalPrev.style.display =
+        images.length > 1
+        ? "flex"
+        : "none";
+
+
+    modalNext.style.display =
+        images.length > 1
+        ? "flex"
+        : "none";
 
 }
 
 
-function closeCartSidebar() {
+function renderModalThumbnails(
+    images
+) {
 
-    if (cartSidebar) {
+    modalThumbnails.innerHTML =
+        images
+        .map(
+            (image,index) => `
 
-        cartSidebar.classList.remove(
-            "active"
+                <button
+                    class="
+                        modal-thumbnail
+                        ${
+                            index ===
+                            currentModalImageIndex
+                            ?
+                            "active"
+                            :
+                            ""
+                        }
+                    "
+                    data-index="${index}"
+                >
+
+                    <img
+                        src="${escapeAttribute(image)}"
+                        alt=""
+                    >
+
+                </button>
+
+            `
+        )
+        .join("");
+
+
+    modalThumbnails
+    .querySelectorAll(
+        ".modal-thumbnail"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                currentModalImageIndex =
+                    Number(
+                        this.dataset.index
+                    );
+
+                updateModal();
+
+            }
         );
+
+    });
+
+}
+
+
+function changeModalImage(
+    direction
+) {
+
+    if (!currentModalProduct) {
+        return;
+    }
+
+
+    const images =
+        getProductImages(
+            currentModalProduct
+        );
+
+
+    if (images.length <= 1) {
+        return;
+    }
+
+
+    currentModalImageIndex +=
+        direction;
+
+
+    if (
+        currentModalImageIndex < 0
+    ) {
+
+        currentModalImageIndex =
+            images.length - 1;
 
     }
 
 
-    if (cartOverlay) {
+    if (
+        currentModalImageIndex >=
+        images.length
+    ) {
 
-        cartOverlay.classList.remove(
-            "active"
-        );
+        currentModalImageIndex =
+            0;
 
     }
 
+
+    updateModal();
+
+}
+
+
+function closeProductModal() {
+
+    productModal.classList.remove(
+        "open"
+    );
 
     document.body.classList.remove(
-        "cart-open"
+        "modal-open"
     );
+
+    currentModalProduct =
+        null;
 
 }
 
 
-/* =========================================================
-   ADD TO CART
-========================================================= */
+/* =====================================================
+   CART
+===================================================== */
+
+function loadCart() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "tasbehaaa_cart"
+            );
+
+
+        cart =
+            saved
+            ?
+            JSON.parse(saved)
+            :
+            [];
+
+    }
+
+    catch {
+
+        cart = [];
+
+    }
+
+
+    updateCartUI();
+
+}
+
+
+function saveCart() {
+
+    localStorage.setItem(
+        "tasbehaaa_cart",
+        JSON.stringify(cart)
+    );
+
+
+    updateCartUI();
+
+}
+
 
 function addToCart(product) {
 
@@ -1079,16 +1767,33 @@ function addToCart(product) {
 
         cart.push({
 
-            id: product.id,
+            id:
+                product.id,
 
-            name: product.name,
+            product_code:
+                product.product_code,
 
-            price: Number(product.price) || 0,
+            name_ar:
+                product.name_ar,
+
+            name_en:
+                product.name_en,
+
+            price:
+                Number(product.price) || 0,
+
+            discount_percent:
+                Number(
+                    product.discount_percent
+                ) || 0,
 
             image_url:
-                product.image_url || "",
+                getProductImages(
+                    product
+                )[0] || "",
 
-            quantity: 1
+            quantity:
+                1
 
         });
 
@@ -1097,48 +1802,296 @@ function addToCart(product) {
 
     saveCart();
 
-    renderCart();
+    openCart();
 
-    openCartSidebar();
+    showTemporaryMessage(
+        translations[
+            currentLanguage
+        ].added
+    );
 
 }
 
 
-/* =========================================================
-   REMOVE FROM CART
-========================================================= */
+function updateCartUI() {
 
-function removeFromCart(productId) {
-
-    cart =
-        cart.filter(
-            item =>
-                String(item.id) !==
-                String(productId)
+    const totalQuantity =
+        cart.reduce(
+            (
+                total,
+                item
+            ) =>
+                total +
+                Number(
+                    item.quantity
+                ),
+            0
         );
 
 
-    saveCart();
+    cartCount.textContent =
+        totalQuantity;
+
 
     renderCart();
 
 }
 
 
-/* =========================================================
-   CHANGE QUANTITY
-========================================================= */
+function renderCart() {
 
-function changeQuantity(
-    productId,
-    change
+    if (!cart.length) {
+
+        cartItems.innerHTML = `
+
+            <div class="empty-cart">
+
+                <div>
+                    🛒
+                </div>
+
+                <p>
+                    ${
+                        translations[
+                            currentLanguage
+                        ].emptyCart
+                    }
+                </p>
+
+            </div>
+
+        `;
+
+
+        cartTotal.textContent =
+            "0";
+
+
+        return;
+
+    }
+
+
+    cartItems.innerHTML =
+        cart
+        .map(
+            item =>
+                createCartItem(
+                    item
+                )
+        )
+        .join("");
+
+
+    cartItems
+    .querySelectorAll(
+        "[data-cart-action]"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                const action =
+                    this.dataset.cartAction;
+
+                const id =
+                    this.dataset.id;
+
+
+                if (
+                    action ===
+                    "increase"
+                ) {
+
+                    changeCartQuantity(
+                        id,
+                        1
+                    );
+
+                }
+
+
+                if (
+                    action ===
+                    "decrease"
+                ) {
+
+                    changeCartQuantity(
+                        id,
+                        -1
+                    );
+
+                }
+
+
+                if (
+                    action ===
+                    "remove"
+                ) {
+
+                    removeFromCart(
+                        id
+                    );
+
+                }
+
+            }
+        );
+
+    });
+
+
+    calculateCartTotal();
+
+}
+
+
+function createCartItem(item) {
+
+    const discount =
+        Number(
+            item.discount_percent
+        ) || 0;
+
+
+    const originalPrice =
+        Number(
+            item.price
+        ) || 0;
+
+
+    const finalPrice =
+        calculateFinalPrice(
+            originalPrice,
+            discount
+        );
+
+
+    const name =
+        currentLanguage === "en"
+
+        ?
+
+        (
+            item.name_en ||
+            item.name_ar ||
+            item.product_code
+        )
+
+        :
+
+        (
+            item.name_ar ||
+            item.name_en ||
+            item.product_code
+        );
+
+
+    return `
+
+        <div class="cart-item">
+
+            <div class="cart-item-image">
+
+                ${
+                    item.image_url
+
+                    ?
+
+                    `<img
+                        src="${escapeAttribute(item.image_url)}"
+                        alt="${escapeAttribute(name)}"
+                    >`
+
+                    :
+
+                    "♡"
+                }
+
+            </div>
+
+
+            <div class="cart-item-info">
+
+                <strong>
+                    ${escapeHtml(name)}
+                </strong>
+
+                <small>
+                    ${escapeHtml(
+                        item.product_code ||
+                        ""
+                    )}
+                </small>
+
+
+                <span class="cart-item-price">
+
+                    ${formatPrice(
+                        finalPrice
+                    )}
+
+                </span>
+
+
+                <div class="quantity-controls">
+
+                    <button
+                        data-cart-action="decrease"
+                        data-id="${item.id}"
+                    >
+                        −
+                    </button>
+
+                    <span>
+                        ${item.quantity}
+                    </span>
+
+                    <button
+                        data-cart-action="increase"
+                        data-id="${item.id}"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+
+                <button
+                    class="remove-cart-item"
+                    data-cart-action="remove"
+                    data-id="${item.id}"
+                >
+
+                    ${
+                        translations[
+                            currentLanguage
+                        ].remove
+                    }
+
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+function changeCartQuantity(
+    id,
+    amount
 ) {
 
     const item =
         cart.find(
             item =>
                 String(item.id) ===
-                String(productId)
+                String(id)
         );
 
 
@@ -1147,693 +2100,548 @@ function changeQuantity(
     }
 
 
-    item.quantity += change;
+    item.quantity +=
+        amount;
 
 
-    if (item.quantity <= 0) {
+    if (
+        item.quantity <= 0
+    ) {
 
-        removeFromCart(productId);
-
-        return;
+        cart =
+            cart.filter(
+                item =>
+                    String(item.id) !==
+                    String(id)
+            );
 
     }
 
 
     saveCart();
 
-    renderCart();
+}
+
+
+function removeFromCart(id) {
+
+    cart =
+        cart.filter(
+            item =>
+                String(item.id) !==
+                String(id)
+        );
+
+
+    saveCart();
 
 }
 
 
-/* =========================================================
-   RENDER CART
-========================================================= */
+function calculateCartTotal() {
 
-function renderCart() {
+    const total =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) => {
 
-    if (!cartItems) {
+                const price =
+                    Number(
+                        item.price
+                    ) || 0;
+
+
+                const discount =
+                    Number(
+                        item.discount_percent
+                    ) || 0;
+
+
+                const finalPrice =
+                    calculateFinalPrice(
+                        price,
+                        discount
+                    );
+
+
+                return (
+                    sum +
+                    (
+                        finalPrice *
+                        item.quantity
+                    )
+                );
+
+            },
+            0
+        );
+
+
+    cartTotal.textContent =
+        formatPrice(
+            total,
+            false
+        );
+
+}
+
+
+function openCart() {
+
+    cartSidebar.classList.add(
+        "open"
+    );
+
+    cartOverlay.classList.add(
+        "open"
+    );
+
+    document.body.classList.add(
+        "cart-open"
+    );
+
+}
+
+
+function closeCartSidebar() {
+
+    cartSidebar.classList.remove(
+        "open"
+    );
+
+    cartOverlay.classList.remove(
+        "open"
+    );
+
+    document.body.classList.remove(
+        "cart-open"
+    );
+
+}
+
+
+/* =====================================================
+   WHATSAPP CHECKOUT
+===================================================== */
+
+function checkoutWhatsApp() {
+
+    if (!cart.length) {
+
+        showTemporaryMessage(
+            translations[
+                currentLanguage
+            ].emptyCart
+        );
+
         return;
+
     }
 
 
-    if (cart.length === 0) {
+    let message =
+        currentLanguage === "en"
 
-        cartItems.innerHTML = `
+        ?
 
-            <div class="empty-cart">
+        "Hello Tasbehaaa, I would like to order:%0A%0A"
 
-                <i class="fa-solid fa-bag-shopping"></i>
+        :
 
-                <h3>
-                    Your bag is empty
-                </h3>
-
-                <p>
-                    Add your favorite handmade pieces here.
-                </p>
-
-            </div>
-
-        `;
+        "مرحبًا Tasbehaaa، أريد طلب:%0A%0A";
 
 
-        updateCartSummary();
+    cart.forEach(
+        (
+            item,
+            index
+        ) => {
 
-        return;
+            const name =
+                currentLanguage === "en"
+
+                ?
+
+                (
+                    item.name_en ||
+                    item.name_ar ||
+                    item.product_code
+                )
+
+                :
+
+                (
+                    item.name_ar ||
+                    item.name_en ||
+                    item.product_code
+                );
+
+
+            const price =
+                calculateFinalPrice(
+                    Number(
+                        item.price
+                    ) || 0,
+                    Number(
+                        item.discount_percent
+                    ) || 0
+                );
+
+
+            message +=
+                `${index + 1}. ${name}%0A`;
+
+
+            message +=
+                `${
+                    translations[
+                        currentLanguage
+                    ].productCode
+                }: ${item.product_code || "-"}%0A`;
+
+
+            message +=
+                `${
+                    translations[
+                        currentLanguage
+                    ].quantity
+                }: ${item.quantity}%0A`;
+
+
+            message +=
+                `Price: ${formatPrice(price)}%0A%0A`;
+
+        }
+    );
+
+
+    const total =
+        cart.reduce(
+            (
+                sum,
+                item
+            ) => {
+
+                const price =
+                    calculateFinalPrice(
+                        Number(
+                            item.price
+                        ) || 0,
+                        Number(
+                            item.discount_percent
+                        ) || 0
+                    );
+
+
+                return (
+                    sum +
+                    (
+                        price *
+                        item.quantity
+                    )
+                );
+
+            },
+            0
+        );
+
+
+    message +=
+        `Total: ${formatPrice(total)}`;
+
+
+    const whatsappURL =
+        `https://wa.me/201003089153?text=${message}`;
+
+
+    window.open(
+        whatsappURL,
+        "_blank"
+    );
+
+}
+
+
+/* =====================================================
+   LANGUAGE
+===================================================== */
+
+function toggleLanguage() {
+
+    currentLanguage =
+        currentLanguage === "ar"
+        ? "en"
+        : "ar";
+
+
+    localStorage.setItem(
+        "tasbehaaa_language",
+        currentLanguage
+    );
+
+
+    applyLanguage();
+
+
+    buildCategories();
+
+    filterProducts();
+
+    renderCart();
+
+
+    if (currentModalProduct) {
+
+        updateModal();
+
     }
 
-
-    cartItems.innerHTML = "";
-
-
-    cart.forEach((item) => {
-
-        const cartItem =
-            document.createElement("div");
-
-        cartItem.className =
-            "cart-item";
+}
 
 
-        const imageHTML =
-            item.image_url
+function applyLanguage() {
 
-                ? `
-                    <img
-                        src="${escapeAttribute(item.image_url)}"
-                        alt="${escapeAttribute(item.name)}"
-                    >
-                `
-
-                : `
-                    <div
-                        style="
-                            width:100%;
-                            height:100%;
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            color:var(--gold);
-                        "
-                    >
-                        <i class="fa-regular fa-gem"></i>
-                    </div>
-                `;
+    document.documentElement.lang =
+        currentLanguage;
 
 
-        cartItem.innerHTML = `
-
-            <div class="cart-item-image">
-
-                ${imageHTML}
-
-            </div>
+    document.documentElement.dir =
+        currentLanguage === "ar"
+        ? "rtl"
+        : "ltr";
 
 
-            <div class="cart-item-info">
-
-                <h4>
-                    ${escapeHTML(item.name)}
-                </h4>
-
-                <span>
-                    ${formatPrice(item.price)} EGP
-                </span>
+    languageToggle.textContent =
+        currentLanguage === "ar"
+        ? "EN"
+        : "عربي";
 
 
-                <div
-                    style="
-                        display:flex;
-                        align-items:center;
-                        gap:8px;
-                        margin-top:7px;
-                    "
-                >
+    document
+    .querySelectorAll(
+        "[data-i18n]"
+    )
+    .forEach(element => {
 
-                    <button
-                        type="button"
-                        class="cart-quantity-btn"
-                        data-action="minus"
-                        style="
-                            width:23px;
-                            height:23px;
-                            border:1px solid var(--border);
-                            background:var(--cream);
-                            border-radius:50%;
-                        "
-                    >
-                        -
-                    </button>
+        const key =
+            element.dataset.i18n;
 
 
-                    <strong
-                        style="
-                            font-size:11px;
-                        "
-                    >
-                        ${item.quantity}
-                    </strong>
+        if (
+            translations[
+                currentLanguage
+            ][key]
+        ) {
 
+            element.innerHTML =
+                translations[
+                    currentLanguage
+                ][key];
 
-                    <button
-                        type="button"
-                        class="cart-quantity-btn"
-                        data-action="plus"
-                        style="
-                            width:23px;
-                            height:23px;
-                            border:1px solid var(--border);
-                            background:var(--cream);
-                            border-radius:50%;
-                        "
-                    >
-                        +
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="cart-remove"
-                aria-label="Remove product"
-            >
-
-                <i class="fa-solid fa-trash"></i>
-
-            </button>
-
-        `;
-
-
-        const removeButton =
-            cartItem.querySelector(
-                ".cart-remove"
-            );
-
-
-        removeButton.addEventListener(
-            "click",
-            () => {
-
-                removeFromCart(
-                    item.id
-                );
-
-            }
-        );
-
-
-        const quantityButtons =
-            cartItem.querySelectorAll(
-                ".cart-quantity-btn"
-            );
-
-
-        quantityButtons.forEach(
-            (button) => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const action =
-                            button.dataset.action;
-
-
-                        changeQuantity(
-
-                            item.id,
-
-                            action === "plus"
-                                ? 1
-                                : -1
-
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-        cartItems.appendChild(
-            cartItem
-        );
+        }
 
     });
 
 
-    updateCartSummary();
+    document
+    .querySelectorAll(
+        "[data-i18n-placeholder]"
+    )
+    .forEach(element => {
+
+        const key =
+            element.dataset
+                .i18nPlaceholder;
+
+
+        element.placeholder =
+            translations[
+                currentLanguage
+            ][key];
+
+    });
 
 }
 
 
-/* =========================================================
-   CART SUMMARY
-========================================================= */
-
-function updateCartSummary() {
-
-    const totalQuantity =
-        cart.reduce(
-            (total, item) =>
-                total + item.quantity,
-            0
-        );
-
-
-    const totalPrice =
-        cart.reduce(
-            (total, item) =>
-                total +
-                (item.price * item.quantity),
-            0
-        );
-
-
-    if (cartCount) {
-
-        cartCount.textContent =
-            totalQuantity;
-
-    }
-
-
-    if (cartTotal) {
-
-        cartTotal.textContent =
-            `${formatPrice(totalPrice)} EGP`;
-
-    }
-
-}
-
-
-/* =========================================================
-   LOCAL STORAGE CART
-========================================================= */
-
-function saveCart() {
-
-    try {
-
-        localStorage.setItem(
-            "tasbehaaa_cart",
-            JSON.stringify(cart)
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save cart:",
-            error
-        );
-
-    }
-
-}
-
-
-function loadCart() {
-
-    try {
-
-        const savedCart =
-            localStorage.getItem(
-                "tasbehaaa_cart"
-            );
-
-
-        if (savedCart) {
-
-            cart =
-                JSON.parse(savedCart);
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not load cart:",
-            error
-        );
-
-        cart = [];
-
-    }
-
-
-    renderCart();
-
-}
-
-
-/* =========================================================
-   WHATSAPP ORDER
-========================================================= */
-
-document.addEventListener(
-    "click",
-    (event) => {
-
-        const whatsappButton =
-            event.target.closest(
-                "#cartWhatsapp"
-            );
-
-
-        if (!whatsappButton) {
-            return;
-        }
-
-
-        event.preventDefault();
-
-
-        if (cart.length === 0) {
-
-            alert(
-                "Your shopping bag is empty."
-            );
-
-            return;
-
-        }
-
-
-        let message =
-            "Hello Tasbehaaa 👋%0A%0A";
-
-        message +=
-            "I would like to order:%0A%0A";
-
-
-        cart.forEach(
-            (item, index) => {
-
-                message +=
-                    `${index + 1}. ${item.name}%0A`;
-
-                message +=
-                    `Quantity: ${item.quantity}%0A`;
-
-                message +=
-                    `Price: ${formatPrice(item.price)} EGP%0A%0A`;
-
-            }
-        );
-
-
-        const total =
-            cart.reduce(
-                (sum, item) =>
-                    sum +
-                    item.price * item.quantity,
-                0
-            );
-
-
-        message +=
-            `Total: ${formatPrice(total)} EGP%0A%0A`;
-
-        message +=
-            "Please confirm my order. Thank you ❤️";
-
-
-        const whatsappURL =
-            `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-
-
-        window.open(
-            whatsappURL,
-            "_blank"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   SCROLL TO CATEGORY
-========================================================= */
-
-function scrollToCategory(categoryName) {
-
-    const id =
-        createCategoryId(
-            categoryName
-        );
-
-
-    const element =
-        document.getElementById(id);
-
-
-    if (element) {
-
-        element.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-        return;
-
-    }
-
-
-    /*
-        If the category has no products,
-        scroll to products section.
-    */
-
-    const productsSection =
-        document.getElementById(
-            "products"
-        );
-
-
-    if (productsSection) {
-
-        productsSection.scrollIntoView({
-            behavior: "smooth"
-        });
-
-    }
-
-
-    /*
-        Show a small message if category
-        currently has no products.
-    */
-
-    if (typeof categoryName === "string") {
-
-        setTimeout(() => {
-
-            const hasProducts =
-                allProducts.some(
-                    product =>
-                        String(
-                            product.category || ""
-                        ).trim() ===
-                        categoryName
-                );
-
-
-            if (!hasProducts) {
-
-                alert(
-                    `${categoryName} currently has no products.`
-                );
-
-            }
-
-        }, 500);
-
-    }
-
-}
-
-
-/* =========================================================
-   CREATE CATEGORY ID
-========================================================= */
-
-function createCategoryId(
-    categoryName
+/* =====================================================
+   UTILITY
+===================================================== */
+
+function formatPrice(
+    value,
+    includeCurrency = true
 ) {
 
-    return (
-        "category-" +
-        String(categoryName)
-            .toLowerCase()
-            .replace(
-                /[^a-z0-9\u0600-\u06ff]+/gi,
-                "-"
-            )
-            .replace(
-                /^-+|-+$/g,
-                ""
-            )
+    const number =
+        Number(value) || 0;
+
+
+    const formatted =
+        new Intl.NumberFormat(
+            "en-US",
+            {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 0
+            }
+        ).format(
+            number
+        );
+
+
+    return includeCurrency
+        ? `${formatted} EGP`
+        : formatted;
+
+}
+
+
+function formatNumber(
+    value
+) {
+
+    return new Intl.NumberFormat(
+        "en-US",
+        {
+            maximumFractionDigits: 2
+        }
+    ).format(
+        Number(value) || 0
     );
 
 }
 
 
-/* =========================================================
-   SCROLL TO TOP
-========================================================= */
+function truncateText(
+    text,
+    length
+) {
 
-function setupScrollTop() {
+    if (
+        text.length <= length
+    ) {
 
-    if (!scrollTop) {
-        return;
+        return text;
+
     }
 
 
-    window.addEventListener(
-        "scroll",
-        () => {
-
-            if (window.scrollY > 500) {
-
-                scrollTop.classList.add(
-                    "active"
-                );
-
-            }
-
-            else {
-
-                scrollTop.classList.remove(
-                    "active"
-                );
-
-            }
-
-        }
-    );
-
-
-    scrollTop.addEventListener(
-        "click",
-        () => {
-
-            window.scrollTo({
-
-                top: 0,
-
-                behavior: "smooth"
-
-            });
-
-        }
+    return (
+        text.substring(
+            0,
+            length
+        ) + "..."
     );
 
 }
 
 
-/* =========================================================
-   HTML SECURITY HELPERS
-========================================================= */
+function escapeHtml(
+    value
+) {
 
-function escapeHTML(value) {
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+}
+
+
+function escapeAttribute(
+    value
+) {
+
+    return escapeHtml(
+        value
+    );
+
+}
+
+
+function showTemporaryMessage(
+    message
+) {
+
+    let notification =
+        document.getElementById(
+            "siteNotification"
+        );
+
+
+    if (!notification) {
+
+        notification =
+            document.createElement(
+                "div"
+            );
+
+        notification.id =
+            "siteNotification";
+
+        notification.className =
+            "site-notification";
+
+        document.body.appendChild(
+            notification
+        );
+
+    }
+
+
+    notification.textContent =
+        message;
+
+
+    notification.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        notification.timer
+    );
+
+
+    notification.timer =
+        setTimeout(
+            function() {
+
+                notification.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
         );
 
 }
 
 
-function escapeAttribute(value) {
+/* =====================================================
+   GLOBAL
+===================================================== */
 
-    return escapeHTML(value);
-
-}
-
-
-/* =========================================================
-   SMOOTH INTERNAL LINKS
-========================================================= */
-
-document.addEventListener(
-    "click",
-    (event) => {
-
-        const link =
-            event.target.closest(
-                'a[href^="#"]'
-            );
-
-
-        if (!link) {
-            return;
-        }
-
-
-        const targetID =
-            link.getAttribute("href");
-
-
-        if (
-            !targetID ||
-            targetID === "#"
-        ) {
-            return;
-        }
-
-
-        const target =
-            document.querySelector(
-                targetID
-            );
-
-
-        if (!target) {
-            return;
-        }
-
-
-        event.preventDefault();
-
-
-        target.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-);
-
-
-/* =========================================================
-   END
-========================================================= */
+window.loadProducts =
+    loadProducts;
