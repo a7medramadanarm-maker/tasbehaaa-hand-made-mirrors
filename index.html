@@ -1,1114 +1,1751 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Tasbehaaa For Hand Made Mirrors</title>
 
-    <meta
-        name="description"
-        content="Tasbehaaa For Hand Made Mirrors - Handmade wedding and engagement mirrors, trays, flowers, embroidery and fingerprint keepsakes."
-    >
+    <meta name="description"
+          content="Tasbehaaa For Hand Made Mirrors - Handmade wedding and engagement products">
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
 
-    <!-- Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Cairo", sans-serif;
+            background: #fbf7f2;
+            color: #3d302b;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        /* =========================
+           VARIABLES
+        ========================= */
+
+        :root {
+            --cream: #fbf7f2;
+            --cream-dark: #f3ebe2;
+            --white: #ffffff;
+            --gold: #b38a55;
+            --gold-dark: #8f6b3d;
+            --brown: #60473b;
+            --brown-dark: #3d302b;
+            --rose: #c79d9b;
+            --rose-light: #ead8d4;
+            --border: #e5d8cd;
+            --shadow: 0 15px 45px rgba(76, 54, 42, .10);
+        }
+
+        /* =========================
+           TOP BAR
+        ========================= */
+
+        .top-bar {
+            background: var(--brown-dark);
+            color: white;
+            padding: 8px 20px;
+            text-align: center;
+            font-size: 13px;
+            letter-spacing: .3px;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(255, 255, 255, .96);
+            backdrop-filter: blur(12px);
+
+            border-bottom: 1px solid var(--border);
+
+            padding: 10px 5%;
+        }
+
+        .nav-container {
+            max-width: 1350px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo img {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text strong {
+            font-family: "Playfair Display", serif;
+            font-size: 23px;
+            letter-spacing: 1px;
+            color: var(--brown-dark);
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--gold-dark);
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--brown);
+            transition: .3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .language-btn,
+        .cart-btn {
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--brown-dark);
+
+            min-width: 44px;
+            height: 42px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .language-btn:hover,
+        .cart-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold-dark);
+        }
+
+        .cart-btn {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -7px;
+            right: -7px;
+
+            min-width: 21px;
+            height: 21px;
+
+            border-radius: 50%;
+
+            background: var(--gold);
+            color: white;
+
+            font-size: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 620px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 70px 6%;
+
+            background:
+                radial-gradient(circle at 10% 20%, rgba(199,157,155,.18), transparent 30%),
+                radial-gradient(circle at 90% 80%, rgba(179,138,85,.15), transparent 30%),
+                linear-gradient(135deg, #fffaf6, #f5eae1);
+        }
+
+        .hero-container {
+            width: 100%;
+            max-width: 1250px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .hero-content {
+            text-align: right;
+        }
+
+        .hero-badge {
+            display: inline-block;
+
+            padding: 8px 18px;
+
+            border: 1px solid var(--gold);
+            border-radius: 50px;
+
+            color: var(--gold-dark);
+
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-family: "Playfair Display", serif;
+            font-size: clamp(42px, 6vw, 75px);
+            line-height: 1.05;
+            color: var(--brown-dark);
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+        }
+
+        .hero p {
+            font-size: 18px;
+            line-height: 2;
+            color: #725e53;
+            max-width: 650px;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+
+            padding: 13px 25px;
+
+            border-radius: 12px;
+
+            font-weight: 700;
+
+            transition: .3s;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+        }
+
+        .btn-primary {
+            background: var(--brown-dark);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            background: #2c211d;
+        }
+
+        .btn-gold {
+            background: var(--gold);
+            color: white;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            background: var(--gold-dark);
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-image img {
+            width: min(500px, 100%);
+            filter: drop-shadow(0 25px 35px rgba(70,45,30,.18));
+        }
+
+        /* =========================
+           FEATURES
+        ========================= */
+
+        .features {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+        }
+
+        .features-container {
+            max-width: 1250px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .feature {
+            padding: 25px 15px;
+
+            text-align: center;
+
+            border-left: 1px solid var(--border);
+        }
+
+        .feature:last-child {
+            border-left: none;
+        }
+
+        .feature i {
+            font-size: 25px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .feature strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .feature span {
+            font-size: 12px;
+            color: #88776d;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        .section {
+            padding: 85px 5%;
+        }
+
+        .section-head {
+            max-width: 1250px;
+            margin: 0 auto 35px;
+
+            text-align: center;
+        }
+
+        .section-head .small-title {
+            color: var(--gold-dark);
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-head h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 42px;
+            color: var(--brown-dark);
+            margin: 5px 0 10px;
+        }
+
+        .section-head p {
+            color: #806e63;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-wrapper {
+            max-width: 600px;
+            margin: 0 auto 45px;
+            position: relative;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+
+            padding: 16px 55px 16px 20px;
+
+            border: 1px solid var(--border);
+            border-radius: 50px;
+
+            background: white;
+
+            outline: none;
+
+            box-shadow: var(--shadow);
+
+            font-size: 14px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            color: var(--gold);
+        }
+
+        html[dir="ltr"] .search-wrapper input {
+            padding: 16px 20px 16px 55px;
+        }
+
+        html[dir="ltr"] .search-wrapper i {
+            right: auto;
+            left: 20px;
+        }
+
+        /* =========================
+           PRODUCTS
+        ========================= */
+
+        .category-section {
+            max-width: 1250px;
+            margin: 0 auto 75px;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+
+            padding-bottom: 13px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-title h3 {
+            font-size: 27px;
+            color: var(--brown-dark);
+        }
+
+        .category-title span {
+            color: var(--gold-dark);
+            font-size: 13px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+        }
+
+        .product-card {
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow: 0 8px 30px rgba(76,54,42,.07);
+
+            transition: .35s;
+
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-7px);
+            box-shadow: var(--shadow);
+        }
+
+        .product-image {
+            position: relative;
+            height: 270px;
+            background: #f6eee8;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+            transition: .5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.04);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+
+            background: #a95e5e;
+            color: white;
+
+            padding: 6px 10px;
+            border-radius: 8px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        html[dir="ltr"] .discount-badge {
+            right: auto;
+            left: 12px;
+        }
+
+        .product-code {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+
+            background: rgba(255,255,255,.9);
+
+            padding: 5px 9px;
+
+            border-radius: 7px;
+
+            color: var(--brown);
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .product-info {
+            padding: 18px;
+        }
+
+        .product-info h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--brown-dark);
+        }
+
+        .product-info p {
+            font-size: 12px;
+            color: #806e63;
+
+            line-height: 1.8;
+
+            min-height: 45px;
+
+            margin-bottom: 12px;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            color: var(--gold-dark);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .old-price {
+            color: #a89a92;
+            text-decoration: line-through;
+            font-size: 13px;
+        }
+
+        .product-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .product-buttons button {
+            border: none;
+            padding: 10px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .details-btn {
+            background: var(--cream-dark);
+            color: var(--brown-dark);
+        }
+
+        .add-btn {
+            background: var(--brown-dark);
+            color: white;
+        }
+
+        .empty-category {
+            padding: 30px;
+
+            text-align: center;
+
+            border: 1px dashed var(--border);
+            border-radius: 15px;
+
+            color: #97877e;
+
+            background: rgba(255,255,255,.5);
+        }
+
+        /* =========================
+           ABOUT
+        ========================= */
+
+        .about {
+            background: white;
+        }
+
+        .about-container {
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 60px;
+
+            align-items: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            max-width: 450px;
+            display: block;
+            margin: auto;
+        }
+
+        .about-content h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            line-height: 2;
+            color: #74645c;
+            margin-bottom: 15px;
+        }
+
+        /* =========================
+           CUSTOM ORDER
+        ========================= */
+
+        .custom-order {
+            background:
+                linear-gradient(135deg, #f5e8df, #fbf7f2);
+        }
+
+        .custom-box {
+            max-width: 950px;
+            margin: auto;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 25px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            box-shadow: var(--shadow);
+        }
+
+        .custom-box h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .custom-box p {
+            color: #78665c;
+            line-height: 1.9;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           SOCIAL
+        ========================= */
+
+        .social-section {
+            background: white;
+        }
+
+        .social-buttons {
+            max-width: 1000px;
+            margin: 35px auto 0;
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+        .social-btn {
+            min-height: 85px;
+
+            border-radius: 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 15px;
+
+            color: white;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            box-shadow: 0 10px 25px rgba(0,0,0,.10);
+
+            transition: .3s;
+        }
+
+        .social-btn i {
+            font-size: 32px;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        .facebook-btn {
+            background: #1877f2;
+        }
+
+        .instagram-btn {
+            background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af);
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: var(--brown-dark);
+            color: white;
+
+            padding: 45px 20px 25px;
+
+            text-align: center;
+        }
+
+        .footer-logo img {
+            width: 90px;
+            margin-bottom: 10px;
+        }
+
+        .footer-brand {
+            font-family: "Playfair Display", serif;
+            font-size: 25px;
+            color: #ead2a5;
+            margin-bottom: 15px;
+        }
+
+        .footer-contact {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+
+            margin: 20px 0;
+        }
+
+        .footer-contact a {
+            color: #f2e8de;
+        }
+
+        .footer-contact a:hover {
+            color: #d6b57b;
+        }
+
+        .footer-credit {
+            margin-top: 25px;
+            padding-top: 20px;
+
+            border-top: 1px solid rgba(255,255,255,.12);
+
+            font-size: 13px;
+
+            color: #d6c6bb;
+        }
+
+        .footer-credit strong {
+            display: block;
+            color: #ead2a5;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           CART
+        ========================= */
+
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,.35);
+
+            z-index: 2000;
+
+            display: none;
+        }
+
+        .cart-overlay.active {
+            display: block;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+
+            top: 0;
+            right: -450px;
+
+            width: min(430px, 100%);
+
+            height: 100vh;
+
+            background: white;
+
+            z-index: 2100;
+
+            transition: .4s;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow: -10px 0 40px rgba(0,0,0,.15);
+        }
+
+        html[dir="ltr"] .cart-sidebar {
+            right: auto;
+            left: -450px;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        html[dir="ltr"] .cart-sidebar.active {
+            right: auto;
+            left: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-family: "Playfair Display", serif;
+            font-size: 25px;
+        }
+
+        .close-cart {
+            border: none;
+            background: transparent;
+
+            font-size: 22px;
+
+            cursor: pointer;
+            color: var(--brown);
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 12px;
+
+            padding: 13px 0;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cart-item img {
+            width: 75px;
+            height: 75px;
+
+            border-radius: 10px;
+
+            object-fit: cover;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-info small {
+            display: block;
+            color: #87766c;
+            font-size: 11px;
+        }
+
+        .cart-item-price {
+            color: var(--gold-dark);
+            font-weight: 700;
+        }
+
+        .remove-item {
+            border: none;
+            background: transparent;
+            color: #a95e5e;
+            cursor: pointer;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .checkout-btn {
+            width: 100%;
+
+            border: none;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            background: #25d366;
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,.55);
+
+            z-index: 3000;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: min(700px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 25px;
+
+            padding: 25px;
+
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+
+            top: 15px;
+            left: 15px;
+
+            border: none;
+            background: var(--cream-dark);
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 320px;
+
+            object-fit: cover;
+
+            border-radius: 18px;
+
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            margin-bottom: 8px;
+        }
+
+        .modal-description {
+            color: #78665c;
+            line-height: 1.9;
+            margin-bottom: 20px;
+        }
+
+        .custom-fields {
+            display: grid;
+            gap: 12px;
+
+            margin-top: 20px;
+        }
+
+        .custom-fields label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--brown);
+        }
+
+        .custom-fields input,
+        .custom-fields textarea {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            outline: none;
+        }
+
+        .custom-fields textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* =========================
+           TOAST
+        ========================= */
+
+        .toast {
+            position: fixed;
+
+            bottom: 25px;
+            left: 50%;
+
+            transform: translateX(-50%) translateY(100px);
+
+            background: var(--brown-dark);
+            color: white;
+
+            padding: 13px 22px;
+
+            border-radius: 50px;
+
+            z-index: 5000;
+
+            opacity: 0;
+
+            transition: .4s;
+
+            font-size: 13px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1050px) {
+
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .hero-container,
+            .about-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 55px 5%;
+            }
+
+            .hero-content {
+                text-align: center;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .features-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature:nth-child(2) {
+                border-left: none;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .social-buttons {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 520px) {
+
+            .logo img {
+                width: 55px;
+                height: 55px;
+            }
+
+            .logo-text strong {
+                font-size: 17px;
+            }
+
+            .logo-text span {
+                font-size: 8px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feature {
+                border-left: 1px solid var(--border);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .section {
+                padding: 60px 5%;
+            }
+
+            .section-head h2 {
+                font-size: 32px;
+            }
+
+            .custom-box {
+                padding: 25px 18px;
+            }
+
+            .social-btn {
+                min-height: 75px;
+                font-size: 16px;
+            }
+
+            .social-btn i {
+                font-size: 28px;
+            }
+
+        }
+
+    </style>
 </head>
 
 <body>
 
     <!-- =========================
-         NAVBAR
-    ========================== -->
-    <header class="navbar">
+         TOP BAR
+    ========================= -->
 
-        <div class="container nav-container">
-
-            <!-- Brand -->
-            <a href="#home" class="brand">
-
-                <div class="brand-logo">
-                    <img
-                        src="images/logo.png"
-                        alt="Tasbehaaa Logo"
-                        onerror="this.style.display='none'; this.parentElement.classList.add('logo-fallback');"
-                    >
-
-                    <span class="logo-fallback-icon">
-                        <i class="fa-regular fa-gem"></i>
-                    </span>
-                </div>
-
-                <div class="brand-text">
-                    <span class="brand-name">TASBEHAAA</span>
-                    <span class="brand-subtitle">FOR HAND MADE MIRRORS</span>
-                </div>
-
-            </a>
-
-            <!-- Desktop Navigation -->
-            <nav class="nav-links">
-
-                <a href="#home">Home</a>
-                <a href="#collections">Collections</a>
-                <a href="#products">Products</a>
-                <a href="#about">About</a>
-                <a href="#custom">Custom Order</a>
-                <a href="#contact">Contact</a>
-
-            </nav>
-
-            <!-- Nav Actions -->
-            <div class="nav-actions">
-
-                <button
-                    type="button"
-                    class="nav-icon"
-                    id="searchButton"
-                    aria-label="Search"
-                >
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-
-                <button
-                    type="button"
-                    class="nav-icon cart-button"
-                    id="cartButton"
-                    aria-label="Shopping Cart"
-                >
-                    <i class="fa-solid fa-bag-shopping"></i>
-
-                    <span
-                        class="cart-count"
-                        id="cartCount"
-                    >
-                        0
-                    </span>
-                </button>
-
-                <button
-                    type="button"
-                    class="nav-icon mobile-menu-button"
-                    id="mobileMenuButton"
-                    aria-label="Open Menu"
-                >
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- Mobile Menu -->
-        <div class="mobile-menu" id="mobileMenu">
-
-            <a href="#home">Home</a>
-            <a href="#collections">Collections</a>
-            <a href="#products">Products</a>
-            <a href="#about">About</a>
-            <a href="#custom">Custom Order</a>
-            <a href="#contact">Contact</a>
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         SEARCH OVERLAY
-    ========================== -->
-
-    <div class="search-overlay" id="searchOverlay">
-
-        <div class="search-box">
-
-            <button
-                type="button"
-                class="close-search"
-                id="closeSearch"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <span class="search-label">
-                Search Products
-            </span>
-
-            <input
-                type="search"
-                id="searchInput"
-                placeholder="Search for a product..."
-                autocomplete="off"
-            >
-
-        </div>
-
+    <div class="top-bar">
+        <span data-ar="التوصيل لكل أنحاء الجمهورية 🇪🇬"
+              data-en="Delivery Available Across Egypt 🇪🇬">
+            التوصيل لكل أنحاء الجمهورية 🇪🇬
+        </span>
     </div>
 
 
     <!-- =========================
-         HERO
-    ========================== -->
+         NAVBAR
+    ========================= -->
 
-    <main>
+    <nav class="navbar">
 
-        <section class="hero" id="home">
+        <div class="nav-container">
 
-            <div class="container hero-grid">
+            <a href="#home" class="logo">
 
-                <!-- Hero Content -->
+                <img src="images/logo.png" alt="Tasbehaaa">
 
-                <div class="hero-content">
+                <div class="logo-text">
+                    <strong>TASBEHAAA</strong>
+                    <span>HAND MADE MIRRORS</span>
+                </div>
 
-                    <span class="eyebrow">
-                        Handmade With Love
+            </a>
+
+            <div class="nav-links">
+
+                <a href="#home" data-ar="الرئيسية" data-en="Home">
+                    الرئيسية
+                </a>
+
+                <a href="#products" data-ar="المنتجات" data-en="Products">
+                    المنتجات
+                </a>
+
+                <a href="#about" data-ar="عن البراند" data-en="About">
+                    عن البراند
+                </a>
+
+                <a href="#contact" data-ar="تواصل معنا" data-en="Contact">
+                    تواصل معنا
+                </a>
+
+            </div>
+
+            <div class="nav-actions">
+
+                <button class="language-btn"
+                        onclick="toggleLanguage()">
+                    EN
+                </button>
+
+                <button class="cart-btn"
+                        onclick="openCart()">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    <span class="cart-count"
+                          id="cartCount">
+                        0
                     </span>
 
-                    <h1>
-                        Elegant Details
-                        <span>For Your Special Day</span>
-                    </h1>
-
-                    <p>
-                        Discover handmade wedding and engagement pieces
-                        created with love, elegance and attention to every detail.
-                    </p>
-
-                    <div class="hero-buttons">
-
-                        <a
-                            href="#products"
-                            class="btn btn-primary"
-                        >
-                            Explore Collection
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-
-                        <a
-                            href="#custom"
-                            class="btn btn-outline"
-                        >
-                            Custom Order
-                        </a>
-
-                    </div>
-
-                    <!-- Hero Mini Info -->
-
-                    <div class="hero-info">
-
-                        <div class="hero-info-item">
-
-                            <strong>
-                                Handmade
-                            </strong>
-
-                            <span>
-                                Crafted With Care
-                            </span>
-
-                        </div>
-
-                        <div class="hero-info-item">
-
-                            <strong>
-                                Custom
-                            </strong>
-
-                            <span>
-                                Made For You
-                            </span>
-
-                        </div>
-
-                        <div class="hero-info-item">
-
-                            <strong>
-                                Wedding
-                            </strong>
-
-                            <span>
-                                Special Moments
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Hero Visual -->
-
-                <div class="hero-visual">
-
-                    <div class="hero-circle">
-
-                        <img
-                            src="images/logo.png"
-                            alt="Tasbehaaa Logo"
-                            onerror="this.style.display='none';"
-                        >
-
-                        <div class="hero-placeholder">
-
-                            <i class="fa-regular fa-gem"></i>
-
-                            <span>
-                                TASBEHAAA
-                            </span>
-
-                            <small>
-                                HAND MADE
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- Floating Card -->
-
-                    <div class="floating-card floating-card-one">
-
-                        <i class="fa-solid fa-heart"></i>
-
-                        <div>
-
-                            <strong>
-                                Handmade
-                            </strong>
-
-                            <span>
-                                With Love
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="floating-card floating-card-two">
-
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-
-                        <div>
-
-                            <strong>
-                                Custom
-                            </strong>
-
-                            <span>
-                                Your Style
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                </button>
 
             </div>
 
-        </section>
+        </div>
 
-
-        <!-- =========================
-             FEATURES
-        ========================== -->
-
-        <section class="features">
-
-            <div class="container features-grid">
-
-                <div class="feature-item">
-
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-hand-sparkles"></i>
-                    </div>
-
-                    <div>
-                        <h3>Handmade</h3>
-
-                        <p>
-                            Every piece is carefully handcrafted.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="feature-item">
-
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-pen-ruler"></i>
-                    </div>
-
-                    <div>
-                        <h3>Custom Design</h3>
-
-                        <p>
-                            Create something made especially for you.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="feature-item">
-
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-gift"></i>
-                    </div>
-
-                    <div>
-                        <h3>Special Details</h3>
-
-                        <p>
-                            Beautiful details for beautiful memories.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="feature-item">
-
-                    <div class="feature-icon">
-                        <i class="fa-brands fa-whatsapp"></i>
-                    </div>
-
-                    <div>
-                        <h3>Easy Ordering</h3>
-
-                        <p>
-                            Contact us directly through WhatsApp.
-                        </p>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             COLLECTIONS
-        ========================== -->
-
-        <section
-            class="collections section"
-            id="collections"
-        >
-
-            <div class="container">
-
-                <div class="section-heading">
-
-                    <span class="eyebrow">
-                        Our Collections
-                    </span>
-
-                    <h2>
-                        Made For Your
-                        <span>Beautiful Moments</span>
-                    </h2>
-
-                    <p>
-                        Explore our handmade wedding and engagement collections.
-                    </p>
-
-                </div>
-
-
-                <div
-                    class="categories-container"
-                    id="categoriesContainer"
-                >
-
-                    <div class="loading-message">
-                        Loading collections...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             PRODUCTS
-        ========================== -->
-
-        <section
-            class="products section"
-            id="products"
-        >
-
-            <div class="container">
-
-                <div class="section-heading">
-
-                    <span class="eyebrow">
-                        Handmade Collection
-                    </span>
-
-                    <h2>
-                        Our Latest
-                        <span>Creations</span>
-                    </h2>
-
-                    <p>
-                        Each product is added and managed from the Admin Dashboard.
-                    </p>
-
-                </div>
-
-
-                <div
-                    class="products-container"
-                    id="productsContainer"
-                >
-
-                    <div class="loading-message">
-                        Loading products...
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="empty-products"
-                    id="emptyProducts"
-                    style="display:none;"
-                >
-
-                    <div class="empty-icon">
-                        <i class="fa-regular fa-heart"></i>
-                    </div>
-
-                    <h3>
-                        No Products Available
-                    </h3>
-
-                    <p>
-                        New handmade creations will appear here soon.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             ABOUT
-        ========================== -->
-
-        <section
-            class="about section"
-            id="about"
-        >
-
-            <div class="container about-grid">
-
-                <div class="about-image">
-
-                    <div class="about-frame">
-
-                        <img
-                            src="images/logo.png"
-                            alt="Tasbehaaa Logo"
-                            onerror="this.style.display='none';"
-                        >
-
-                        <div class="about-placeholder">
-
-                            <i class="fa-regular fa-gem"></i>
-
-                            <span>
-                                TASBEHAAA
-                            </span>
-
-                            <small>
-                                FOR HAND MADE MIRRORS
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="about-content">
-
-                    <span class="eyebrow">
-                        About Tasbehaaa
-                    </span>
-
-                    <h2>
-                        Handmade Pieces
-                        <span>With A Story</span>
-                    </h2>
-
-                    <p>
-                        Tasbehaaa For Hand Made Mirrors creates elegant
-                        handmade pieces designed especially for weddings,
-                        engagements and unforgettable celebrations.
-                    </p>
-
-                    <p>
-                        From beautiful mirrors and engagement trays to
-                        flowers, embroidery and fingerprint keepsakes,
-                        every piece is created to become part of a special memory.
-                    </p>
-
-
-                    <div class="about-points">
-
-                        <div>
-                            <i class="fa-solid fa-check"></i>
-                            <span>Handcrafted with attention to detail</span>
-                        </div>
-
-                        <div>
-                            <i class="fa-solid fa-check"></i>
-                            <span>Elegant designs for special occasions</span>
-                        </div>
-
-                        <div>
-                            <i class="fa-solid fa-check"></i>
-                            <span>Custom orders available</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             CUSTOM ORDER
-        ========================== -->
-
-        <section
-            class="custom-order section"
-            id="custom"
-        >
-
-            <div class="container">
-
-                <div class="custom-box">
-
-                    <div class="custom-content">
-
-                        <span class="eyebrow">
-                            Your Idea, Your Style
-                        </span>
-
-                        <h2>
-                            Create Something
-                            <span>Special</span>
-                        </h2>
-
-                        <p>
-                            Have a specific design in mind?
-                            Tell us what you imagine and we'll help bring
-                            your idea to life.
-                        </p>
-
-
-                        <a
-                            href="https://wa.me/201003089153"
-                            target="_blank"
-                            rel="noopener"
-                            class="btn btn-light"
-                        >
-
-                            <i class="fa-brands fa-whatsapp"></i>
-
-                            Request Custom Order
-
-                        </a>
-
-                    </div>
-
-
-                    <div class="custom-decoration">
-
-                        <div class="decor-circle">
-
-                            <i class="fa-regular fa-heart"></i>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             CONTACT / SOCIAL
-        ========================== -->
-
-        <section
-            class="contact section"
-            id="contact"
-        >
-
-            <div class="container">
-
-                <div class="section-heading">
-
-                    <span class="eyebrow">
-                        Stay Connected
-                    </span>
-
-                    <h2>
-                        Let's Make
-                        <span>Beautiful Memories</span>
-                    </h2>
-
-                    <p>
-                        Follow Tasbehaaa and contact us for orders and custom designs.
-                    </p>
-
-                </div>
-
-
-                <div class="contact-grid">
-
-                    <!-- WhatsApp -->
-
-                    <a
-                        href="https://wa.me/201003089153"
-                        target="_blank"
-                        rel="noopener"
-                        class="contact-card"
-                    >
-
-                        <div class="contact-icon whatsapp-icon">
-
-                            <i class="fa-brands fa-whatsapp"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                WhatsApp
-                            </h3>
-
-                            <p>
-                                01003089153
-                            </p>
-
-                        </div>
-
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-
-                    </a>
-
-
-                    <!-- Instagram -->
-
-                    <a
-                        href="https://www.instagram.com/handmade.mirrors_"
-                        target="_blank"
-                        rel="noopener"
-                        class="contact-card"
-                    >
-
-                        <div class="contact-icon instagram-icon">
-
-                            <i class="fa-brands fa-instagram"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Instagram
-                            </h3>
-
-                            <p>
-                                @handmade.mirrors_
-                            </p>
-
-                        </div>
-
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-
-                    </a>
-
-
-                    <!-- Facebook -->
-
-                    <a
-                        href="https://www.facebook.com/share/g/19NaR3nXEC/"
-                        target="_blank"
-                        rel="noopener"
-                        class="contact-card"
-                    >
-
-                        <div class="contact-icon facebook-icon">
-
-                            <i class="fa-brands fa-facebook-f"></i>
-
-                        </div>
-
-                        <div>
-
-                            <h3>
-                                Facebook
-                            </h3>
-
-                            <p>
-                                Join Our Community
-                            </p>
-
-                        </div>
-
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
+    </nav>
 
 
     <!-- =========================
-         CART SIDEBAR
-    ========================== -->
+         HERO
+    ========================= -->
 
-    <div
-        class="cart-overlay"
-        id="cartOverlay"
-    ></div>
+    <section class="hero" id="home">
 
+        <div class="hero-container">
 
-    <aside
-        class="cart-sidebar"
-        id="cartSidebar"
-    >
+            <div class="hero-content">
 
-        <div class="cart-header">
-
-            <div>
-
-                <span class="eyebrow">
-                    Your Selection
+                <span class="hero-badge"
+                      data-ar="Handmade With Love"
+                      data-en="Handmade With Love">
+                    Handmade With Love
                 </span>
 
-                <h2>
-                    Shopping Bag
-                </h2>
+                <h1>
+                    <span>Tasbehaaa</span><br>
+                    <span data-ar="تفاصيل تُحكى بحب"
+                          data-en="Details Made With Love">
+                        تفاصيل تُحكى بحب
+                    </span>
+                </h1>
+
+                <p
+                    data-ar="منتجات هاند ميد مميزة للفرح والخطوبة، مصممة بعناية لتخلّد أجمل لحظاتكم."
+                    data-en="Unique handmade wedding and engagement pieces, carefully designed to preserve your most beautiful memories.">
+                    منتجات هاند ميد مميزة للفرح والخطوبة، مصممة بعناية لتخلّد أجمل لحظاتكم.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#products"
+                       class="btn btn-primary">
+
+                        <i class="fa-solid fa-gem"></i>
+
+                        <span data-ar="اكتشفي المنتجات"
+                              data-en="Explore Products">
+                            اكتشفي المنتجات
+                        </span>
+
+                    </a>
+
+                    <a href="https://wa.me/201003089153"
+                       target="_blank"
+                       class="btn btn-gold">
+
+                        <i class="fa-brands fa-whatsapp"></i>
+
+                        <span data-ar="اطلبي الآن"
+                              data-en="Order Now">
+                            اطلبي الآن
+                        </span>
+
+                    </a>
+
+                </div>
 
             </div>
 
+            <div class="hero-image">
 
-            <button
-                type="button"
-                class="close-cart"
-                id="closeCart"
-            >
+                <img src="images/logo.png"
+                     alt="Tasbehaaa For Hand Made Mirrors">
 
-                <i class="fa-solid fa-xmark"></i>
+            </div>
 
-            </button>
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         FEATURES
+    ========================= -->
+
+    <section class="features">
+
+        <div class="features-container">
+
+            <div class="feature">
+
+                <i class="fa-solid fa-hand-sparkles"></i>
+
+                <strong data-ar="هاند ميد"
+                        data-en="Handmade">
+                    هاند ميد
+                </strong>
+
+                <span data-ar="تفاصيل مصنوعة بحب"
+                      data-en="Made with love">
+                    تفاصيل مصنوعة بحب
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <i class="fa-solid fa-heart"></i>
+
+                <strong data-ar="للفرح والخطوبة"
+                        data-en="Wedding & Engagement">
+                    للفرح والخطوبة
+                </strong>
+
+                <span data-ar="تفاصيل لأجمل المناسبات"
+                      data-en="For your special moments">
+                    تفاصيل لأجمل المناسبات
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <i class="fa-solid fa-truck-fast"></i>
+
+                <strong data-ar="توصيل للجمهورية"
+                        data-en="Nationwide Delivery">
+                    توصيل للجمهورية
+                </strong>
+
+                <span data-ar="لجميع أنحاء مصر"
+                      data-en="Across Egypt">
+                    لجميع أنحاء مصر
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <i class="fa-solid fa-pen-nib"></i>
+
+                <strong data-ar="تصميم مخصص"
+                        data-en="Customization">
+                    تصميم مخصص
+                </strong>
+
+                <span data-ar="أسماء وتاريخ وملاحظات"
+                      data-en="Names, dates & notes">
+                    أسماء وتاريخ وملاحظات
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         PRODUCTS
+    ========================= -->
+
+    <section class="section" id="products">
+
+        <div class="section-head">
+
+            <div class="small-title">
+                TASBEHAAA
+            </div>
+
+            <h2 data-ar="منتجاتنا"
+                data-en="Our Collection">
+                منتجاتنا
+            </h2>
+
+            <p data-ar="اختاري القطعة التي تشبه لحظتك."
+               data-en="Choose the piece that matches your special moment.">
+                اختاري القطعة التي تشبه لحظتك.
+            </p>
 
         </div>
 
 
-        <div
-            class="cart-items"
-            id="cartItems"
-        >
+        <div class="search-wrapper">
 
-            <div class="empty-cart">
+            <i class="fa-solid fa-magnifying-glass"></i>
 
-                <i class="fa-solid fa-bag-shopping"></i>
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="ابحثي بكود المنتج..."
+                data-placeholder-ar="ابحثي بكود المنتج..."
+                data-placeholder-en="Search by product code..."
+                oninput="searchProducts()"
+            >
 
-                <h3>
-                    Your bag is empty
-                </h3>
+        </div>
 
-                <p>
-                    Add your favorite handmade pieces here.
+
+        <div id="categoriesContainer"></div>
+
+    </section>
+
+
+    <!-- =========================
+         ABOUT
+    ========================= -->
+
+    <section class="section about" id="about">
+
+        <div class="about-container">
+
+            <div class="about-image">
+
+                <img src="images/logo.png"
+                     alt="Tasbehaaa">
+
+            </div>
+
+            <div class="about-content">
+
+                <div class="small-title">
+                    TASBEHAAA
+                </div>
+
+                <h2 data-ar="كل تفصيلة لها حكاية"
+                    data-en="Every Detail Has A Story">
+                    كل تفصيلة لها حكاية
+                </h2>
+
+                <p
+                    data-ar="في Tasbehaaa بنصمم قطع هاند ميد مخصوصة للفرح والخطوبة، تجمع بين الذوق الراقي والتفاصيل الشخصية."
+                    data-en="At Tasbehaaa, we create handmade wedding and engagement pieces that combine elegant design with personal details.">
+                    في Tasbehaaa بنصمم قطع هاند ميد مخصوصة للفرح والخطوبة، تجمع بين الذوق الراقي والتفاصيل الشخصية.
+                </p>
+
+                <p
+                    data-ar="من المرايات وصواني الشبكة إلى البصمات والورد والتطريز، كل قطعة بتتعمل علشان تكون ذكرى مميزة."
+                    data-en="From mirrors and engagement trays to fingerprint guest books, flowers and embroidery, every piece is made to become a special memory.">
+                    من المرايات وصواني الشبكة إلى البصمات والورد والتطريز، كل قطعة بتتعمل علشان تكون ذكرى مميزة.
                 </p>
 
             </div>
 
         </div>
 
+    </section>
 
-        <div class="cart-footer">
 
-            <div class="cart-total">
+    <!-- =========================
+         CUSTOM ORDER
+    ========================= -->
 
-                <span>
-                    Total
-                </span>
+    <section class="section custom-order">
 
-                <strong id="cartTotal">
-                    0 EGP
-                </strong>
+        <div class="custom-box">
 
+            <div class="small-title">
+                CUSTOM ORDER
             </div>
 
+            <h2 data-ar="عايزة تصميم مخصوص؟"
+                data-en="Want A Custom Design?">
+                عايزة تصميم مخصوص؟
+            </h2>
 
-            <a
-                href="https://wa.me/201003089153"
-                target="_blank"
-                rel="noopener"
-                class="btn btn-primary cart-whatsapp"
-                id="cartWhatsapp"
-            >
+            <p
+                data-ar="لو عندك فكرة معينة أو عايزة تعدلي في منتج، ابعتي لنا فكرتك على WhatsApp وهنساعدك في تنفيذها."
+                data-en="Have a specific idea or want to customize a product? Send us your idea on WhatsApp and we will help you create it.">
+                لو عندك فكرة معينة أو عايزة تعدلي في منتج، ابعتي لنا فكرتك على WhatsApp وهنساعدك في تنفيذها.
+            </p>
+
+            <a href="https://wa.me/201003089153"
+               target="_blank"
+               class="btn btn-gold">
 
                 <i class="fa-brands fa-whatsapp"></i>
 
-                Order Via WhatsApp
+                <span data-ar="تواصلي معنا"
+                      data-en="Contact Us">
+                    تواصلي معنا
+                </span>
 
             </a>
 
         </div>
 
-    </aside>
+    </section>
+
+
+    <!-- =========================
+         SOCIAL
+    ========================= -->
+
+    <section class="section social-section"
+             id="contact">
+
+        <div class="section-head">
+
+            <div class="small-title">
+                FOLLOW US
+            </div>
+
+            <h2 data-ar="تابعينا"
+                data-en="Follow Us">
+                تابعينا
+            </h2>
+
+            <p
+                data-ar="تابعي كل جديد من Tasbehaaa على صفحاتنا."
+                data-en="Follow Tasbehaaa and discover our latest creations.">
+                تابعي كل جديد من Tasbehaaa على صفحاتنا.
+            </p>
+
+        </div>
+
+
+        <div class="social-buttons">
+
+            <!-- FACEBOOK -->
+            <a
+                href="https://www.facebook.com/share/g/19NaR3nXEC/"
+                target="_blank"
+                class="social-btn facebook-btn">
+
+                <i class="fa-brands fa-facebook-f"></i>
+
+                <span>Facebook</span>
+
+            </a>
+
+
+            <!-- WHATSAPP -->
+            <a
+                href="https://wa.me/201003089153"
+                target="_blank"
+                class="social-btn whatsapp-btn">
+
+                <i class="fa-brands fa-whatsapp"></i>
+
+                <span>WhatsApp</span>
+
+            </a>
+
+
+            <!-- INSTAGRAM -->
+            <a
+                href="https://www.instagram.com/handmade.mirrors_"
+                target="_blank"
+                class="social-btn instagram-btn">
+
+                <i class="fa-brands fa-instagram"></i>
+
+                <span>Instagram</span>
+
+            </a>
+
+        </div>
+
+    </section>
 
 
     <!-- =========================
          FOOTER
-    ========================== -->
+    ========================= -->
 
-    <footer class="footer">
+    <footer>
 
-        <div class="container">
+        <div class="footer-logo">
 
-            <div class="footer-grid">
+            <img src="images/logo.png"
+                 alt="Tasbehaaa">
 
-                <!-- Footer Brand -->
+        </div>
 
-                <div class="footer-brand">
+        <div class="footer-brand">
+            TASBEHAAA
+        </div>
 
-                    <a
-                        href="#home"
-                        class="brand footer-logo"
-                    >
+        <p>
+            Hand Made Mirrors
+        </p>
 
-                        <div class="brand-logo">
+        <div class="footer-contact">
 
-                            <img
-                                src="images/logo.png"
-                                alt="Tasbehaaa Logo"
-                                onerror="this.style.display='none';"
-                            >
+            <a href="https://wa.me/201003089153"
+               target="_blank">
 
-                            <span class="logo-fallback-icon">
-                                <i class="fa-regular fa-gem"></i>
-                            </span>
+                <i class="fa-brands fa-whatsapp"></i>
+                01003089153
 
-                        </div>
+            </a>
 
-                        <div class="brand-text">
+            <a href="https://www.facebook.com/share/g/19NaR3nXEC/"
+               target="_blank">
 
-                            <span class="brand-name">
-                                TASBEHAAA
-                            </span>
+                <i class="fa-brands fa-facebook"></i>
+                Facebook
 
-                            <span class="brand-subtitle">
-                                FOR HAND MADE MIRRORS
-                            </span>
+            </a>
 
-                        </div>
+            <a href="https://www.instagram.com/handmade.mirrors_"
+               target="_blank">
 
-                    </a>
+                <i class="fa-brands fa-instagram"></i>
+                Instagram
 
+            </a>
 
-                    <p>
-                        Handmade wedding and engagement pieces
-                        created with love and elegance.
-                    </p>
+        </div>
 
+        <div class="footer-credit">
 
-                    <div class="footer-social">
+            <span>
+                Managed By: Tasbeh Mohamed
+            </span>
 
-                        <a
-                            href="https://www.facebook.com/share/g/19NaR3nXEC/"
-                            target="_blank"
-                            rel="noopener"
-                            aria-label="Facebook"
-                        >
-                            <i class="fa-brands fa-facebook-f"></i>
-                        </a>
-
-                        <a
-                            href="https://www.instagram.com/handmade.mirrors_"
-                            target="_blank"
-                            rel="noopener"
-                            aria-label="Instagram"
-                        >
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-
-                        <a
-                            href="https://wa.me/201003089153"
-                            target="_blank"
-                            rel="noopener"
-                            aria-label="WhatsApp"
-                        >
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Footer Links -->
-
-                <div class="footer-column">
-
-                    <h3>
-                        Explore
-                    </h3>
-
-                    <a href="#home">
-                        Home
-                    </a>
-
-                    <a href="#collections">
-                        Collections
-                    </a>
-
-                    <a href="#products">
-                        Products
-                    </a>
-
-                    <a href="#about">
-                        About Us
-                    </a>
-
-                </div>
-
-
-                <div class="footer-column">
-
-                    <h3>
-                        Services
-                    </h3>
-
-                    <a href="#custom">
-                        Custom Orders
-                    </a>
-
-                    <a href="#products">
-                        Wedding Pieces
-                    </a>
-
-                    <a href="#products">
-                        Engagement Pieces
-                    </a>
-
-                    <a href="#contact">
-                        Contact Us
-                    </a>
-
-                </div>
-
-
-                <div class="footer-column">
-
-                    <h3>
-                        Contact
-                    </h3>
-
-                    <a
-                        href="https://wa.me/201003089153"
-                        target="_blank"
-                        rel="noopener"
-                    >
-                        <i class="fa-brands fa-whatsapp"></i>
-                        01003089153
-                    </a>
-
-                    <a
-                        href="https://www.instagram.com/handmade.mirrors_"
-                        target="_blank"
-                        rel="noopener"
-                    >
-                        <i class="fa-brands fa-instagram"></i>
-                        handmade.mirrors_
-                    </a>
-
-                </div>
-
-            </div>
-
-
-            <!-- Footer Bottom -->
-
-            <div class="footer-bottom">
-
-                <div class="footer-management">
-
-                    <span>
-                        Managed By:
-                    </span>
-
-                    <strong>
-                        Tasbeh Mohamed
-                    </strong>
-
-                </div>
-
-
-                <div class="footer-prepared">
-
-                    Prepared By: Eng Ahmad Ramadan
-
-                </div>
-
-
-                <div class="footer-copy">
-
-                    © <span id="currentYear"></span>
-                    Tasbehaaa For Hand Made Mirrors.
-                    All Rights Reserved.
-
-                </div>
-
-            </div>
+            <strong>
+                Prepared By: Eng Ahmad
+            </strong>
 
         </div>
 
@@ -1116,30 +1753,1605 @@
 
 
     <!-- =========================
-         SCROLL TO TOP
-    ========================== -->
+         CART
+    ========================= -->
 
-    <button
-        type="button"
-        class="scroll-top"
-        id="scrollTop"
-        aria-label="Scroll to top"
-    >
+    <div class="cart-overlay"
+         id="cartOverlay"
+         onclick="closeCart()">
+    </div>
 
-        <i class="fa-solid fa-arrow-up"></i>
+    <aside class="cart-sidebar"
+           id="cartSidebar">
 
-    </button>
+        <div class="cart-header">
+
+            <h3 data-ar="السلة"
+                data-en="Cart">
+                السلة
+            </h3>
+
+            <button class="close-cart"
+                    onclick="closeCart()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <div class="cart-items"
+             id="cartItems">
+        </div>
+
+        <div class="cart-footer">
+
+            <div class="cart-total">
+
+                <span data-ar="الإجمالي"
+                      data-en="Total">
+                    الإجمالي
+                </span>
+
+                <span id="cartTotal">
+                    0 EGP
+                </span>
+
+            </div>
+
+            <button class="checkout-btn"
+                    onclick="checkoutWhatsApp()">
+
+                <i class="fa-brands fa-whatsapp"></i>
+
+                <span data-ar="إتمام الطلب عبر WhatsApp"
+                      data-en="Order via WhatsApp">
+                    إتمام الطلب عبر WhatsApp
+                </span>
+
+            </button>
+
+        </div>
+
+    </aside>
 
 
     <!-- =========================
-         SUPABASE
-    ========================== -->
+         PRODUCT MODAL
+    ========================= -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="modal-overlay"
+         id="productModal">
 
-    <!-- Main JavaScript -->
+        <div class="modal">
 
-    <script src="script.js"></script>
+            <button class="modal-close"
+                    onclick="closeProductModal()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+            <img id="modalImage"
+                 class="modal-image"
+                 src=""
+                 alt="Product">
+
+            <h2 id="modalName"></h2>
+
+            <div class="price-row">
+
+                <span class="current-price"
+                      id="modalPrice">
+                </span>
+
+                <span class="old-price"
+                      id="modalOldPrice">
+                </span>
+
+            </div>
+
+            <p class="modal-description"
+               id="modalDescription">
+            </p>
+
+            <div class="custom-fields">
+
+                <div>
+                    <label data-ar="الأسماء المراد كتابتها"
+                           data-en="Names to be written">
+                        الأسماء المراد كتابتها
+                    </label>
+
+                    <input
+                        id="customNames"
+                        type="text"
+                        placeholder="مثال: أحمد & مروى"
+                        data-placeholder-ar="مثال: أحمد & مروى"
+                        data-placeholder-en="Example: Ahmed & Marwa"
+                    >
+                </div>
+
+                <div id="dateField">
+
+                    <label data-ar="التاريخ"
+                           data-en="Date">
+                        التاريخ
+                    </label>
+
+                    <input
+                        id="customDate"
+                        type="date"
+                    >
+
+                </div>
+
+                <div>
+
+                    <label data-ar="ملاحظات"
+                           data-en="Notes">
+                        ملاحظات
+                    </label>
+
+                    <textarea
+                        id="customNotes"
+                        placeholder="أي تفاصيل إضافية..."
+                        data-placeholder-ar="أي تفاصيل إضافية..."
+                        data-placeholder-en="Any additional details...">
+                    </textarea>
+
+                </div>
+
+                <button class="btn btn-gold"
+                        onclick="addFromModal()">
+
+                    <i class="fa-solid fa-cart-plus"></i>
+
+                    <span data-ar="إضافة للسلة"
+                          data-en="Add To Cart">
+                        إضافة للسلة
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         TOAST
+    ========================= -->
+
+    <div class="toast"
+         id="toast">
+    </div>
+
+
+<script>
+
+    /* =========================================================
+       SUPABASE
+    ========================================================= */
+
+    const SUPABASE_URL =
+        "https://nzkgjobzxgvroyzmvvdi.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_8aHDt5z7hV4Ojx69yJx8Fw_HWuFAJYJ";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    /* =========================================================
+       WHATSAPP
+    ========================================================= */
+
+    const WHATSAPP_NUMBER = "201003089153";
+
+
+    /* =========================================================
+       FIXED CATEGORIES
+    ========================================================= */
+
+    const CATEGORIES = [
+
+        {
+            key: "mirrors",
+            ar: "مرايات",
+            en: "Mirrors"
+        },
+
+        {
+            key: "engagement_trays",
+            ar: "صوانى الشبكة",
+            en: "Engagement Ring Trays"
+        },
+
+        {
+            key: "fingerprint_guest_books",
+            ar: "البصمات",
+            en: "Fingerprint Guest Books"
+        },
+
+        {
+            key: "flower_bouquets",
+            ar: "بوكيهات الورد",
+            en: "Flower Bouquets"
+        },
+
+        {
+            key: "decorative_mirrors",
+            ar: "مرايات الديكور",
+            en: "Decorative Mirrors"
+        },
+
+        {
+            key: "pinterest_mirrors",
+            ar: "مرايات بنترست",
+            en: "Pinterest Mirrors"
+        },
+
+        {
+            key: "wedding_fingerprint_guest_books",
+            ar: "بصمات كتب الكتاب",
+            en: "Wedding Fingerprint Guest Books"
+        },
+
+        {
+            key: "special_gifts",
+            ar: "الهدايا المميزة",
+            en: "Special Gifts"
+        }
+
+    ];
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    let currentLanguage = "ar";
+
+    let products = [];
+
+    let cart = [];
+
+    let selectedProduct = null;
+
+
+    /* =========================================================
+       INIT
+    ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            loadLanguage();
+
+            await loadProducts();
+
+            renderCart();
+
+        }
+    );
+
+
+    /* =========================================================
+       LANGUAGE
+    ========================================================= */
+
+    function loadLanguage() {
+
+        const saved =
+            localStorage.getItem(
+                "tasbehaaa_language"
+            );
+
+        if (saved === "en") {
+
+            currentLanguage = "en";
+
+        }
+
+        applyLanguage();
+
+    }
+
+
+    function toggleLanguage() {
+
+        currentLanguage =
+            currentLanguage === "ar"
+                ? "en"
+                : "ar";
+
+        localStorage.setItem(
+            "tasbehaaa_language",
+            currentLanguage
+        );
+
+        applyLanguage();
+
+        renderProducts();
+
+    }
+
+
+    function applyLanguage() {
+
+        document.documentElement.lang =
+            currentLanguage;
+
+        document.documentElement.dir =
+            currentLanguage === "ar"
+                ? "rtl"
+                : "ltr";
+
+
+        document
+            .querySelectorAll("[data-ar]")
+            .forEach(el => {
+
+                el.textContent =
+                    currentLanguage === "ar"
+                        ? el.dataset.ar
+                        : el.dataset.en;
+
+            });
+
+
+        document
+            .querySelectorAll("[data-placeholder-ar]")
+            .forEach(el => {
+
+                el.placeholder =
+                    currentLanguage === "ar"
+                        ? el.dataset.placeholderAr
+                        : el.dataset.placeholderEn;
+
+            });
+
+
+        const languageButton =
+            document.querySelector(".language-btn");
+
+        if (languageButton) {
+
+            languageButton.textContent =
+                currentLanguage === "ar"
+                    ? "EN"
+                    : "AR";
+
+        }
+
+    }
+
+
+    /* =========================================================
+       LOAD PRODUCTS
+    ========================================================= */
+
+    async function loadProducts() {
+
+        const container =
+            document.getElementById(
+                "categoriesContainer"
+            );
+
+        container.innerHTML = `
+            <div class="empty-category">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <br>
+                ${
+                    currentLanguage === "ar"
+                        ? "جاري تحميل المنتجات..."
+                        : "Loading products..."
+                }
+            </div>
+        `;
+
+
+        const { data, error } =
+            await supabaseClient
+                .from("products")
+                .select("*")
+                .order(
+                    "created_at",
+                    { ascending: false }
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            container.innerHTML = `
+                <div class="empty-category">
+                    ${
+                        currentLanguage === "ar"
+                            ? "حدث خطأ أثناء تحميل المنتجات."
+                            : "An error occurred while loading products."
+                    }
+                </div>
+            `;
+
+            return;
+        }
+
+
+        products = data || [];
+
+        renderProducts();
+
+    }
+
+
+    /* =========================================================
+       GET CATEGORY
+    ========================================================= */
+
+    function getCategory(product) {
+
+        const ar =
+            String(
+                product.category_ar || ""
+            ).trim();
+
+        const en =
+            String(
+                product.category_en || ""
+            ).trim();
+
+        const legacy =
+            String(
+                product.category || ""
+            ).trim();
+
+
+        return CATEGORIES.find(category =>
+
+            category.ar === ar ||
+            category.en === en ||
+            category.ar === legacy ||
+            category.en === legacy
+
+        );
+
+    }
+
+
+    /* =========================================================
+       IMAGE
+    ========================================================= */
+
+    function getProductImages(product) {
+
+        let images = [];
+
+
+        if (
+            Array.isArray(
+                product.image_urls
+            )
+        ) {
+
+            images =
+                product.image_urls
+                    .filter(Boolean);
+
+        }
+
+
+        if (
+            images.length === 0 &&
+            product.image_url
+        ) {
+
+            images = [
+                product.image_url
+            ];
+
+        }
+
+
+        if (images.length === 0) {
+
+            images = [
+                "images/logo.png"
+            ];
+
+        }
+
+
+        return images;
+
+    }
+
+
+    /* =========================================================
+       PRICE
+    ========================================================= */
+
+    function getDiscountedPrice(product) {
+
+        const price =
+            Number(product.price || 0);
+
+        const discount =
+            Number(
+                product.discount_percent || 0
+            );
+
+        if (
+            discount <= 0
+        ) {
+
+            return price;
+
+        }
+
+
+        return price -
+            (
+                price *
+                discount /
+                100
+            );
+
+    }
+
+
+    function formatPrice(price) {
+
+        return new Intl.NumberFormat(
+            currentLanguage === "ar"
+                ? "ar-EG"
+                : "en-US"
+        ).format(price);
+
+    }
+
+
+    /* =========================================================
+       RENDER PRODUCTS
+    ========================================================= */
+
+    function renderProducts(
+        filteredProducts = null
+    ) {
+
+        const container =
+            document.getElementById(
+                "categoriesContainer"
+            );
+
+        const list =
+            filteredProducts || products;
+
+
+        let html = "";
+
+
+        CATEGORIES.forEach(category => {
+
+            const categoryProducts =
+                list.filter(product => {
+
+                    const productCategory =
+                        getCategory(product);
+
+                    return (
+                        productCategory &&
+                        productCategory.key ===
+                        category.key
+                    );
+
+                });
+
+
+            html += `
+
+                <div
+                    class="category-section"
+                    data-category="${category.key}"
+                >
+
+                    <div class="category-title">
+
+                        <h3>
+                            ${
+                                currentLanguage === "ar"
+                                    ? category.ar
+                                    : category.en
+                            }
+                        </h3>
+
+                        <span>
+                            ${categoryProducts.length}
+                            ${
+                                currentLanguage === "ar"
+                                    ? "منتج"
+                                    : "Products"
+                            }
+                        </span>
+
+                    </div>
+
+                    ${
+                        categoryProducts.length
+                            ? `
+                                <div class="products-grid">
+
+                                    ${
+                                        categoryProducts
+                                            .map(
+                                                createProductCard
+                                            )
+                                            .join("")
+                                    }
+
+                                </div>
+                              `
+                            : `
+                                <div class="empty-category">
+
+                                    ${
+                                        currentLanguage === "ar"
+                                            ? "لا توجد منتجات مضافة في هذا القسم حالياً."
+                                            : "No products have been added to this section yet."
+                                    }
+
+                                </div>
+                              `
+                    }
+
+                </div>
+
+            `;
+
+        });
+
+
+        container.innerHTML = html;
+
+    }
+
+
+    /* =========================================================
+       PRODUCT CARD
+    ========================================================= */
+
+    function createProductCard(product) {
+
+        const images =
+            getProductImages(product);
+
+        const image =
+            images[0];
+
+
+        const name =
+            currentLanguage === "ar"
+                ? (
+                    product.name_ar ||
+                    product.name ||
+                    "منتج"
+                )
+                : (
+                    product.name_en ||
+                    product.name ||
+                    "Product"
+                );
+
+
+        const description =
+            currentLanguage === "ar"
+                ? (
+                    product.description_ar ||
+                    product.description ||
+                    ""
+                )
+                : (
+                    product.description_en ||
+                    product.description ||
+                    ""
+                );
+
+
+        const originalPrice =
+            Number(product.price || 0);
+
+
+        const finalPrice =
+            getDiscountedPrice(product);
+
+
+        const discount =
+            Number(
+                product.discount_percent || 0
+            );
+
+
+        return `
+
+            <article
+                class="product-card"
+                data-code="${(
+                    product.product_code || ""
+                ).toLowerCase()}"
+            >
+
+                <div class="product-image">
+
+                    <img
+                        src="${escapeAttribute(image)}"
+                        alt="${escapeAttribute(name)}"
+                        loading="lazy"
+                    >
+
+                    ${
+                        discount > 0
+                            ? `
+                                <div class="discount-badge">
+                                    -${discount}%
+                                </div>
+                              `
+                            : ""
+                    }
+
+                    ${
+                        product.product_code
+                            ? `
+                                <div class="product-code">
+                                    ${escapeHtml(
+                                        product.product_code
+                                    )}
+                                </div>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+
+                <div class="product-info">
+
+                    <h4>
+                        ${escapeHtml(name)}
+                    </h4>
+
+                    <p>
+                        ${escapeHtml(description)}
+                    </p>
+
+
+                    <div class="price-row">
+
+                        <span class="current-price">
+                            ${formatPrice(finalPrice)}
+                            EGP
+                        </span>
+
+                        ${
+                            discount > 0
+                                ? `
+                                    <span class="old-price">
+                                        ${formatPrice(originalPrice)}
+                                        EGP
+                                    </span>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+
+                    <div class="product-buttons">
+
+                        <button
+                            class="details-btn"
+                            onclick="openProductModal('${product.id}')"
+                        >
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            ${
+                                currentLanguage === "ar"
+                                    ? "التفاصيل"
+                                    : "Details"
+                            }
+
+                        </button>
+
+
+                        <button
+                            class="add-btn"
+                            onclick="quickAdd('${product.id}')"
+                        >
+
+                            <i class="fa-solid fa-cart-plus"></i>
+
+                            ${
+                                currentLanguage === "ar"
+                                    ? "أضف للسلة"
+                                    : "Add"
+                            }
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        `;
+
+    }
+
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    function searchProducts() {
+
+        const value =
+            document
+                .getElementById("searchInput")
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        if (!value) {
+
+            renderProducts();
+
+            return;
+
+        }
+
+
+        const filtered =
+            products.filter(product =>
+
+                String(
+                    product.product_code || ""
+                )
+                .toLowerCase()
+                .includes(value)
+
+            );
+
+
+        renderProducts(filtered);
+
+    }
+
+
+    /* =========================================================
+       MODAL
+    ========================================================= */
+
+    function openProductModal(id) {
+
+        selectedProduct =
+            products.find(
+                product =>
+                    String(product.id) ===
+                    String(id)
+            );
+
+
+        if (!selectedProduct) {
+            return;
+        }
+
+
+        const images =
+            getProductImages(
+                selectedProduct
+            );
+
+
+        const name =
+            currentLanguage === "ar"
+                ? (
+                    selectedProduct.name_ar ||
+                    selectedProduct.name ||
+                    ""
+                )
+                : (
+                    selectedProduct.name_en ||
+                    selectedProduct.name ||
+                    ""
+                );
+
+
+        const description =
+            currentLanguage === "ar"
+                ? (
+                    selectedProduct.description_ar ||
+                    selectedProduct.description ||
+                    ""
+                )
+                : (
+                    selectedProduct.description_en ||
+                    selectedProduct.description ||
+                    ""
+                );
+
+
+        const originalPrice =
+            Number(
+                selectedProduct.price || 0
+            );
+
+
+        const finalPrice =
+            getDiscountedPrice(
+                selectedProduct
+            );
+
+
+        document.getElementById(
+            "modalImage"
+        ).src = images[0];
+
+
+        document.getElementById(
+            "modalName"
+        ).textContent = name;
+
+
+        document.getElementById(
+            "modalDescription"
+        ).textContent =
+            description;
+
+
+        document.getElementById(
+            "modalPrice"
+        ).textContent =
+            `${formatPrice(finalPrice)} EGP`;
+
+
+        const oldPrice =
+            document.getElementById(
+                "modalOldPrice"
+            );
+
+
+        if (
+            Number(
+                selectedProduct.discount_percent || 0
+            ) > 0
+        ) {
+
+            oldPrice.textContent =
+                `${formatPrice(originalPrice)} EGP`;
+
+        } else {
+
+            oldPrice.textContent = "";
+
+        }
+
+
+        const dateField =
+            document.getElementById(
+                "dateField"
+            );
+
+
+        dateField.style.display =
+            selectedProduct.allow_custom_date
+                ? "block"
+                : "none";
+
+
+        document.getElementById(
+            "customNames"
+        ).value = "";
+
+
+        document.getElementById(
+            "customDate"
+        ).value = "";
+
+
+        document.getElementById(
+            "customNotes"
+        ).value = "";
+
+
+        document.getElementById(
+            "productModal"
+        ).classList.add("active");
+
+    }
+
+
+    function closeProductModal() {
+
+        document
+            .getElementById("productModal")
+            .classList.remove("active");
+
+        selectedProduct = null;
+
+    }
+
+
+    /* =========================================================
+       QUICK ADD
+    ========================================================= */
+
+    function quickAdd(id) {
+
+        const product =
+            products.find(
+                item =>
+                    String(item.id) ===
+                    String(id)
+            );
+
+
+        if (!product) {
+            return;
+        }
+
+
+        addToCart(
+            product,
+            {
+                names: "",
+                date: "",
+                notes: ""
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       ADD FROM MODAL
+    ========================================================= */
+
+    function addFromModal() {
+
+        if (!selectedProduct) {
+            return;
+        }
+
+
+        const names =
+            document
+                .getElementById("customNames")
+                .value
+                .trim();
+
+
+        const date =
+            document
+                .getElementById("customDate")
+                .value;
+
+
+        const notes =
+            document
+                .getElementById("customNotes")
+                .value
+                .trim();
+
+
+        addToCart(
+            selectedProduct,
+            {
+                names,
+                date,
+                notes
+            }
+        );
+
+
+        closeProductModal();
+
+    }
+
+
+    /* =========================================================
+       CART
+    ========================================================= */
+
+    function addToCart(
+        product,
+        customization
+    ) {
+
+        cart.push({
+
+            cartId:
+                Date.now() +
+                Math.random(),
+
+            productId:
+                product.id,
+
+            productCode:
+                product.product_code || "",
+
+            name:
+                currentLanguage === "ar"
+                    ? (
+                        product.name_ar ||
+                        product.name ||
+                        ""
+                    )
+                    : (
+                        product.name_en ||
+                        product.name ||
+                        ""
+                    ),
+
+            image:
+                getProductImages(product)[0],
+
+            price:
+                getDiscountedPrice(
+                    product
+                ),
+
+            names:
+                customization.names || "",
+
+            date:
+                customization.date || "",
+
+            notes:
+                customization.notes || ""
+
+        });
+
+
+        saveCart();
+
+        renderCart();
+
+        showToast(
+            currentLanguage === "ar"
+                ? "تمت إضافة المنتج للسلة"
+                : "Product added to cart"
+        );
+
+    }
+
+
+    function removeFromCart(cartId) {
+
+        cart =
+            cart.filter(
+                item =>
+                    item.cartId !==
+                    cartId
+            );
+
+
+        saveCart();
+
+        renderCart();
+
+    }
+
+
+    function renderCart() {
+
+        const container =
+            document.getElementById(
+                "cartItems"
+            );
+
+
+        const count =
+            document.getElementById(
+                "cartCount"
+            );
+
+
+        const total =
+            document.getElementById(
+                "cartTotal"
+            );
+
+
+        count.textContent =
+            cart.length;
+
+
+        if (cart.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="empty-category">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    <br><br>
+
+                    ${
+                        currentLanguage === "ar"
+                            ? "السلة فارغة"
+                            : "Your cart is empty"
+                    }
+
+                </div>
+
+            `;
+
+            total.textContent =
+                "0 EGP";
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            cart.map(item => `
+
+                <div class="cart-item">
+
+                    <img
+                        src="${escapeAttribute(item.image)}"
+                        alt=""
+                    >
+
+                    <div class="cart-item-info">
+
+                        <strong>
+                            ${escapeHtml(item.name)}
+                        </strong>
+
+                        <small>
+                            ${
+                                item.productCode
+                                    ? item.productCode
+                                    : ""
+                            }
+                        </small>
+
+                        ${
+                            item.names
+                                ? `
+                                    <small>
+                                        ${
+                                            currentLanguage === "ar"
+                                                ? "الأسماء: "
+                                                : "Names: "
+                                        }
+                                        ${escapeHtml(item.names)}
+                                    </small>
+                                  `
+                                : ""
+                        }
+
+                        ${
+                            item.date
+                                ? `
+                                    <small>
+                                        ${
+                                            currentLanguage === "ar"
+                                                ? "التاريخ: "
+                                                : "Date: "
+                                        }
+                                        ${escapeHtml(item.date)}
+                                    </small>
+                                  `
+                                : ""
+                        }
+
+                        <span class="cart-item-price">
+                            ${formatPrice(item.price)} EGP
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="remove-item"
+                        onclick="removeFromCart(${item.cartId})"
+                    >
+
+                        <i class="fa-solid fa-trash"></i>
+
+                    </button>
+
+                </div>
+
+            `).join("");
+
+
+        const sum =
+            cart.reduce(
+                (total, item) =>
+                    total + Number(item.price),
+                0
+            );
+
+
+        total.textContent =
+            `${formatPrice(sum)} EGP`;
+
+    }
+
+
+    function saveCart() {
+
+        localStorage.setItem(
+            "tasbehaaa_cart",
+            JSON.stringify(cart)
+        );
+
+    }
+
+
+    function openCart() {
+
+        document
+            .getElementById("cartSidebar")
+            .classList.add("active");
+
+
+        document
+            .getElementById("cartOverlay")
+            .classList.add("active");
+
+    }
+
+
+    function closeCart() {
+
+        document
+            .getElementById("cartSidebar")
+            .classList.remove("active");
+
+
+        document
+            .getElementById("cartOverlay")
+            .classList.remove("active");
+
+    }
+
+
+    /* =========================================================
+       WHATSAPP CHECKOUT
+    ========================================================= */
+
+    function checkoutWhatsApp() {
+
+        if (cart.length === 0) {
+
+            showToast(
+                currentLanguage === "ar"
+                    ? "السلة فارغة"
+                    : "Your cart is empty"
+            );
+
+            return;
+
+        }
+
+
+        let message =
+            currentLanguage === "ar"
+                ? "مرحباً Tasbehaaa، أريد طلب المنتجات التالية:%0A%0A"
+                : "Hello Tasbehaaa, I would like to order the following products:%0A%0A";
+
+
+        cart.forEach(
+            (item, index) => {
+
+                message +=
+                    `${index + 1}. ${item.name}%0A`;
+
+                if (item.productCode) {
+
+                    message +=
+                        currentLanguage === "ar"
+                            ? `كود المنتج: ${item.productCode}%0A`
+                            : `Product Code: ${item.productCode}%0A`;
+
+                }
+
+
+                message +=
+                    currentLanguage === "ar"
+                        ? `السعر: ${formatPrice(item.price)} جنيه%0A`
+                        : `Price: ${formatPrice(item.price)} EGP%0A`;
+
+
+                if (item.names) {
+
+                    message +=
+                        currentLanguage === "ar"
+                            ? `الأسماء: ${item.names}%0A`
+                            : `Names: ${item.names}%0A`;
+
+                }
+
+
+                if (item.date) {
+
+                    message +=
+                        currentLanguage === "ar"
+                            ? `التاريخ: ${item.date}%0A`
+                            : `Date: ${item.date}%0A`;
+
+                }
+
+
+                if (item.notes) {
+
+                    message +=
+                        currentLanguage === "ar"
+                            ? `ملاحظات: ${item.notes}%0A`
+                            : `Notes: ${item.notes}%0A`;
+
+                }
+
+
+                message += "%0A";
+
+            }
+        );
+
+
+        const total =
+            cart.reduce(
+                (sum, item) =>
+                    sum + Number(item.price),
+                0
+            );
+
+
+        message +=
+            currentLanguage === "ar"
+                ? `الإجمالي: ${formatPrice(total)} جنيه`
+                : `Total: ${formatPrice(total)} EGP`;
+
+
+        const url =
+            `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+
+
+        window.open(
+            url,
+            "_blank"
+        );
+
+    }
+
+
+    /* =========================================================
+       TOAST
+    ========================================================= */
+
+    function showToast(message) {
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+
+        toast.textContent =
+            message;
+
+
+        toast.classList.add("show");
+
+
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+
+    }
+
+
+    /* =========================================================
+       ESCAPE
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replace(
+                /[&<>"']/g,
+                char => ({
+
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+
+                }[char])
+            );
+
+    }
+
+
+    function escapeAttribute(value) {
+
+        return escapeHtml(value);
+
+    }
+
+
+    /* =========================================================
+       LOAD CART
+    ========================================================= */
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "tasbehaaa_cart"
+            );
+
+
+        if (saved) {
+
+            cart =
+                JSON.parse(saved);
+
+        }
+
+    } catch (error) {
+
+        cart = [];
+
+    }
+
+
+    /* =========================================================
+       CLOSE MODAL ON BACKDROP
+    ========================================================= */
+
+    document
+        .getElementById("productModal")
+        .addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target.id ===
+                    "productModal"
+                ) {
+
+                    closeProductModal();
+
+                }
+
+            }
+        );
+
+</script>
 
 </body>
-                                </html>
+    </html>
